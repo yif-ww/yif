@@ -5,6 +5,7 @@ import {
   fromKobo,
   type TransactionVerifyData,
 } from "@/lib/paystack";
+import { sendTicketConfirmation, sendDonationThankYou } from "@/lib/send-email";
 
 export const metadata: Metadata = {
   title: "Payment Status | YIF",
@@ -70,6 +71,47 @@ export default async function PaymentCallbackPage({ searchParams }: Props) {
   const eventTitle = getField("event_title");
   const tierName = getField("tier_name");
   const quantity = getField("quantity");
+  const donationType = getField("donation_type");
+  const cause = getField("cause");
+  const frequency = getField("frequency");
+  const fullName = getField("full_name");
+
+  // Send transactional email — failures must not block page render
+  if (success) {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://yif.org";
+    const customerEmail = data.customer.email;
+    const formattedAmount = `${currency} ${amountPaid.toLocaleString()}`;
+
+    if (eventTitle) {
+      void sendTicketConfirmation({
+        recipientName: fullName || customerEmail,
+        eventTitle,
+        tierName,
+        quantity: Number(quantity) || 1,
+        amountPaid: formattedAmount,
+        eventDate: "",
+        eventTime: "",
+        eventLocation: "",
+        reference: data.reference,
+        recipientEmail: customerEmail,
+        eventsUrl: `${appUrl}/events`,
+      }).catch((err: unknown) => {
+        console.error("[callback] ticket email failed:", err);
+      });
+    } else if (donationType === "donation") {
+      void sendDonationThankYou({
+        recipientName: fullName || customerEmail,
+        cause: cause || "General Fund",
+        amountDonated: formattedAmount,
+        frequency: frequency || "one-time",
+        reference: data.reference,
+        recipientEmail: customerEmail,
+        donateUrl: `${appUrl}/donate`,
+      }).catch((err: unknown) => {
+        console.error("[callback] donation email failed:", err);
+      });
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[var(--yif-cream)] py-24 px-4">
