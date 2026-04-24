@@ -69,11 +69,31 @@ export interface TransactionVerifyData {
   amount: number; // kobo
   currency: string;
   channel: string;
-  paid_at: string;
+  paid_at: string | null;
+  created_at?: string;
+  fees?: number | null; // kobo — Paystack fee
+  fees_breakdown?: unknown;
+  gateway_response?: string | null;
+  ip_address?: string | null;
+  authorization?: {
+    authorization_code?: string;
+    bin?: string;
+    last4?: string;
+    exp_month?: string;
+    exp_year?: string;
+    channel?: string;
+    card_type?: string;
+    bank?: string;
+    country_code?: string;
+    brand?: string;
+  } | null;
   metadata: Record<string, unknown>;
   customer: {
     id: number;
     email: string;
     customer_code: string;
+    first_name?: string | null;
+    last_name?: string | null;
+    phone?: string | null;
   };
 }

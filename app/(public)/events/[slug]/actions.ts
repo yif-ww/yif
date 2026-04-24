@@ -5,6 +5,7 @@ import {
   toKobo,
   type TransactionInitData,
 } from "@/lib/paystack";
+import { recordTransactionInit } from "@/lib/transactions";
 import { getEventBySlug } from "@/lib/events-data";
 
 export type CheckoutState = {
@@ -76,6 +77,23 @@ export async function checkoutTickets(
           },
         }),
       },
+    );
+
+    await recordTransactionInit({
+      reference: result.data.reference,
+      purpose: "TICKET",
+      amountNaira: totalNaira,
+      customerEmail: email,
+      customerName: name,
+      metadata: {
+        eventSlug: slug,
+        eventTitle: event.title,
+        tierId: tier.id,
+        tierName: tier.name,
+        quantity: qty,
+      },
+    }).catch((err) =>
+      console.error("[checkoutTickets] tx init record failed:", err),
     );
 
     // Redirect to Paystack authorization URL

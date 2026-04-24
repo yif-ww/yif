@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import DonateForm from "./DonateForm";
 
 export const metadata: Metadata = {
@@ -32,12 +34,19 @@ const IMPACT_ITEMS = [
 
 const TRUST_ITEMS = [
   "UN/ECOSOC Consultative Status NGO",
-  "Registered in Nigeria (IT 28744)",
+  "Registered NGO · IT 28744",
   "Transparent annual financial reports",
   "Over 10,000 beneficiaries served",
 ];
 
-export default function DonatePage() {
+export default async function DonatePage() {
+  const session = await auth.api
+    .getSession({ headers: await headers() })
+    .catch(() => null);
+  const user = session?.user
+    ? { name: session.user.name ?? "", email: session.user.email }
+    : null;
+
   return (
     <>
       {/* ── Hero ── */}
@@ -117,7 +126,7 @@ export default function DonatePage() {
                 <h2 className="mb-6 font-display text-2xl font-semibold text-[var(--yif-navy)]">
                   Make Your Gift
                 </h2>
-                <DonateForm />
+                <DonateForm user={user} />
               </div>
             </div>
 

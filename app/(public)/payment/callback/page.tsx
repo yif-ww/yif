@@ -5,7 +5,13 @@ import {
   fromKobo,
   type TransactionVerifyData,
 } from "@/lib/paystack";
-import { sendTicketConfirmation, sendDonationThankYou } from "@/lib/send-email";
+import { recordTransactionVerified } from "@/lib/transactions";
+import {
+  sendTicketConfirmation,
+  sendDonationThankYou,
+  sendMembershipWelcome,
+} from "@/lib/send-email";
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "Payment Status | YIF",
@@ -75,6 +81,82 @@ export default async function PaymentCallbackPage({ searchParams }: Props) {
   const cause = getField("cause");
   const frequency = getField("frequency");
   const fullName = getField("full_name");
+  const paymentType = getField("payment_type");
+  const memberId = getField("member_id");
+  const membershipTier = getField("membership_tier");
+  const fromTier = getField("from_tier");
+  const toTier = getField("to_tier");
+
+  const isMembershipFlow =
+    paymentType === "membership" ||
+    paymentType === "membership_upgrade" ||
+    paymentType === "membership_renewal";
+
+  // Persist the verify result so admins can audit it (fees, channel, raw payload).
+  const purpose = isMembershipFlow
+    ? "MEMBERSHIP"
+    : eventTitle
+      ? "TICKET"
+      : donationType === "donation"
+        ? "DONATION"
+        : "OTHER";
+  await recordTransactionVerified(data, { purpose }).catch((err) => {
+    console.error("[callback] tx verify record failed:", err);
+  });
+
+  // Membership activation — run before sending email
+  let membershipNumber = "";
+  if (success && paymentType === "membership" && memberId) {
+    try {
+      // Generate a unique membership number: YIF-YYYY-NNNN
+      const year = new Date().getFullYear();
+      const count = await prisma.member.count({
+        where: { status: "ACTIVE" },
+      });
+      membershipNumber = `YIF-${year}-${String(count + 1).padStart(4, "0")}`;
+
+      const expiresAt = new Date();
+      expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+
+      await prisma.member.update({
+        where: { id: memberId },
+        data: {
+          status: "ACTIVE",
+          expiresAt,
+          membershipNumber,
+          paystackRef: data.reference,
+        },
+      });
+    } catch (err) {
+      console.error("[callback] membership activation failed:", err);
+    }
+  }
+
+  // Membership tier change (upgrade or renewal)
+  if (
+    success &&
+    (paymentType === "membership_upgrade" ||
+      paymentType === "membership_renewal") &&
+    memberId &&
+    toTier
+  ) {
+    try {
+      const expiresAt = new Date();
+      expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+      await prisma.member.update({
+        where: { id: memberId },
+        data: {
+          tier: toTier as "BRONZE" | "SILVER" | "GOLD" | "DIAMOND" | "PLATINUM",
+          status: "ACTIVE",
+          expiresAt,
+          pendingTier: null,
+          paystackRef: data.reference,
+        },
+      });
+    } catch (err) {
+      console.error("[callback] membership tier change failed:", err);
+    }
+  }
 
   // Send transactional email — failures must not block page render
   if (success) {
@@ -110,6 +192,28 @@ export default async function PaymentCallbackPage({ searchParams }: Props) {
       }).catch((err: unknown) => {
         console.error("[callback] donation email failed:", err);
       });
+    } else if (paymentType === "membership" && membershipNumber) {
+      const expiresDate = new Date();
+      expiresDate.setFullYear(expiresDate.getFullYear() + 1);
+      const tierLabel =
+        membershipTier.charAt(0) + membershipTier.slice(1).toLowerCase();
+
+      void sendMembershipWelcome({
+        recipientName: fullName || customerEmail,
+        tierName: tierLabel,
+        membershipNumber,
+        amountPaid: formattedAmount,
+        expiresAt: expiresDate.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
+        reference: data.reference,
+        recipientEmail: customerEmail,
+        dashboardUrl: `${appUrl}/dashboard`,
+      }).catch((err: unknown) => {
+        console.error("[callback] membership email failed:", err);
+      });
     }
   }
 
@@ -141,17 +245,60 @@ export default async function PaymentCallbackPage({ searchParams }: Props) {
               Payment Successful
             </p>
             <h1 className="font-display text-3xl font-semibold text-[var(--yif-navy)] mb-3">
-              You&apos;re confirmed!
+              {paymentType === "membership"
+                ? "Welcome to YIF!"
+                : paymentType === "membership_upgrade"
+                  ? "Tier Upgraded!"
+                  : paymentType === "membership_renewal"
+                    ? "Membership Renewed!"
+                    : "You\'re confirmed!"}
             </h1>
 
-            {eventTitle && (
+            {paymentType === "membership" ? (
+              <p className="text-[var(--muted)] mb-6">
+                Your{" "}
+                <strong className="text-[var(--yif-navy)]">
+                  {membershipTier.charAt(0) +
+                    membershipTier.slice(1).toLowerCase()}
+                </strong>{" "}
+                membership is now active.
+              </p>
+            ) : paymentType === "membership_upgrade" ? (
+              <p className="text-[var(--muted)] mb-6">
+                You\'ve moved from{" "}
+                <strong className="text-[var(--yif-navy)]">
+                  {fromTier.charAt(0) + fromTier.slice(1).toLowerCase()}
+                </strong>{" "}
+                to{" "}
+                <strong className="text-[var(--yif-navy)]">
+                  {toTier.charAt(0) + toTier.slice(1).toLowerCase()}
+                </strong>{" "}
+                — your new benefits start immediately.
+              </p>
+            ) : paymentType === "membership_renewal" ? (
+              <p className="text-[var(--muted)] mb-6">
+                Your{" "}
+                <strong className="text-[var(--yif-navy)]">
+                  {toTier.charAt(0) + toTier.slice(1).toLowerCase()}
+                </strong>{" "}
+                membership has been renewed for another year.
+              </p>
+            ) : eventTitle ? (
               <p className="text-[var(--muted)] mb-6">
                 {quantity} × {tierName} for{" "}
                 <strong className="text-[var(--yif-navy)]">{eventTitle}</strong>
               </p>
-            )}
+            ) : null}
 
             <div className="rounded-xl bg-[var(--yif-cream)] border border-[var(--yif-cream-dark)] p-4 mb-6 text-sm text-left">
+              {membershipNumber && (
+                <div className="flex justify-between py-1.5 border-b border-[var(--yif-cream-dark)]">
+                  <span className="text-[var(--muted)]">Membership No.</span>
+                  <span className="font-mono text-xs text-[var(--yif-charcoal)]">
+                    {membershipNumber}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between py-1.5 border-b border-[var(--yif-cream-dark)]">
                 <span className="text-[var(--muted)]">Amount Paid</span>
                 <span className="font-semibold text-[var(--yif-navy)]">
@@ -177,12 +324,21 @@ export default async function PaymentCallbackPage({ searchParams }: Props) {
               your reference number for records.
             </p>
 
-            <Link
-              href="/events"
-              className="inline-block rounded-lg bg-[var(--yif-navy)] px-6 py-3 text-sm font-semibold text-white hover:bg-[var(--yif-navy-light)] transition-colors"
-            >
-              View More Events
-            </Link>
+            {isMembershipFlow ? (
+              <Link
+                href="/dashboard/membership"
+                className="inline-block rounded-lg bg-[var(--yif-navy)] px-6 py-3 text-sm font-semibold text-white hover:bg-[var(--yif-navy-light)] transition-colors"
+              >
+                Go to Member Portal
+              </Link>
+            ) : (
+              <Link
+                href="/events"
+                className="inline-block rounded-lg bg-[var(--yif-navy)] px-6 py-3 text-sm font-semibold text-white hover:bg-[var(--yif-navy-light)] transition-colors"
+              >
+                View More Events
+              </Link>
+            )}
           </div>
         ) : (
           <div className="rounded-2xl bg-white border border-red-100 shadow-lg p-8 text-center animate-fade-up">

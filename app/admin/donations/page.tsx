@@ -1,106 +1,94 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@/generated/prisma/client";
 
-export const metadata: Metadata = {
-  title: "Admin — Donations | YIF",
-};
+export const metadata: Metadata = { title: "Admin — Donations | YIF" };
 
-const DONATIONS = [
-  {
-    donor: "Chidi Okonkwo",
-    cause: "Scholarship Fund",
-    amount: "₦100,000",
-    date: "Dec 15, 2025",
-    ref: "DON-2025-0089",
-    type: "One-time",
-  },
-  {
-    donor: "Anonymous",
-    cause: "General Fund",
-    amount: "₦50,000",
-    date: "Dec 14, 2025",
-    ref: "DON-2025-0088",
-    type: "Recurring",
-  },
-  {
-    donor: "Ngozi Eze",
-    cause: "Karo-Ojire",
-    amount: "₦75,000",
-    date: "Dec 12, 2025",
-    ref: "DON-2025-0087",
-    type: "One-time",
-  },
-  {
-    donor: "Tunde Adeyemi",
-    cause: "Youth Empowerment",
-    amount: "₦25,000",
-    date: "Dec 10, 2025",
-    ref: "DON-2025-0086",
-    type: "Recurring",
-  },
-  {
-    donor: "Bisi Oladele",
-    cause: "Scholarship Fund",
-    amount: "₦200,000",
-    date: "Dec 8, 2025",
-    ref: "DON-2025-0085",
-    type: "One-time",
-  },
-  {
-    donor: "Fatima Yusuf",
-    cause: "General Fund",
-    amount: "₦15,000",
-    date: "Dec 7, 2025",
-    ref: "DON-2025-0084",
-    type: "One-time",
-  },
-  {
-    donor: "Wale Adesanya",
-    cause: "Karo-Ojire",
-    amount: "₦50,000",
-    date: "Dec 5, 2025",
-    ref: "DON-2025-0083",
-    type: "Recurring",
-  },
-  {
-    donor: "Emeka Uche",
-    cause: "Scholarship Fund",
-    amount: "₦30,000",
-    date: "Dec 3, 2025",
-    ref: "DON-2025-0082",
-    type: "One-time",
-  },
-  {
-    donor: "Kunle Fashola",
-    cause: "Youth Empowerment",
-    amount: "₦20,000",
-    date: "Nov 30, 2025",
-    ref: "DON-2025-0081",
-    type: "Recurring",
-  },
-  {
-    donor: "Adeola Bello",
-    cause: "General Fund",
-    amount: "₦10,000",
-    date: "Nov 28, 2025",
-    ref: "DON-2025-0080",
-    type: "One-time",
-  },
-];
+function formatNaira(amount: number): string {
+  if (amount >= 1_000_000) return `₦${(amount / 1_000_000).toFixed(1)}M`;
+  if (amount >= 1_000) return `₦${(amount / 1_000).toFixed(0)}k`;
+  return `₦${amount.toLocaleString()}`;
+}
 
-const CAUSES = [
-  { name: "Scholarship Fund", amount: "₦5.2M", pct: 42 },
-  { name: "Karo-Ojire Programme", amount: "₦3.1M", pct: 25 },
-  { name: "General Fund", amount: "₦2.8M", pct: 23 },
-  { name: "Youth Empowerment", amount: "₦1.3M", pct: 10 },
-];
+function getCause(metadata: Prisma.JsonValue): string {
+  if (
+    metadata &&
+    typeof metadata === "object" &&
+    !Array.isArray(metadata) &&
+    "cause" in metadata &&
+    typeof (metadata as Record<string, unknown>).cause === "string"
+  ) {
+    return (metadata as Record<string, string>).cause;
+  }
+  return "General Fund";
+}
 
-const TYPE_STYLE: Record<string, string> = {
-  "One-time": "bg-white/5 text-white/40 border-white/10",
-  Recurring:
-    "bg-[var(--yif-green)]/12 text-[var(--yif-green)] border-[var(--yif-green)]/25",
-};
+export default async function AdminDonationsPage() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session || session.user.role !== "admin") redirect("/dashboard");
 
-export default function AdminDonationsPage() {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+  const BASE = { purpose: "DONATION" as const, status: "SUCCESS" as const };
+
+  const [allTimeAgg, thisYearAgg, avgAgg, completedCount, donations] =
+    await Promise.all([
+      prisma.transaction.aggregate({
+        _sum: { amount: true },
+        where: BASE,
+      }),
+      prisma.transaction.aggregate({
+        _sum: { amount: true },
+        where: { ...BASE, createdAt: { gte: startOfYear } },
+      }),
+      prisma.transaction.aggregate({
+        _avg: { amount: true },
+        where: BASE,
+      }),
+      prisma.transaction.count({ where: BASE }),
+      prisma.transaction.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 100,
+        where: BASE,
+        select: {
+          id: true,
+          reference: true,
+          customerName: true,
+          customerEmail: true,
+          amount: true,
+          netAmount: true,
+          channel: true,
+          status: true,
+          createdAt: true,
+          paidAt: true,
+          metadata: true,
+        },
+      }),
+    ]);
+
+  const totalAll = Number(allTimeAgg._sum.amount ?? 0);
+  const totalYear = Number(thisYearAgg._sum.amount ?? 0);
+  const avgAmount = Number(avgAgg._avg.amount ?? 0);
+
+  // Group by cause in-memory (cause lives in JSON metadata)
+  const causeMap = new Map<string, number>();
+  for (const d of donations) {
+    const cause = getCause(d.metadata);
+    causeMap.set(cause, (causeMap.get(cause) ?? 0) + Number(d.amount));
+  }
+  const causeTotal = [...causeMap.values()].reduce((s, v) => s + v, 0) || 1;
+  const CAUSES = [...causeMap.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, amt]) => ({
+      name,
+      amount: formatNaira(amt),
+      pct: Math.round((amt / causeTotal) * 100),
+    }));
+
   return (
     <div className="min-h-screen bg-[var(--yif-navy-dark)] px-4 py-8 sm:px-6 lg:px-8">
       {/* Header */}
@@ -124,10 +112,10 @@ export default function AdminDonationsPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-8">
         {[
-          { label: "Total Raised (All Time)", value: "₦12.4M" },
-          { label: "This Year", value: "₦4.2M" },
-          { label: "Average Donation", value: "₦8,500" },
-          { label: "Recurring Donors", value: "45" },
+          { label: "Total Raised (All Time)", value: formatNaira(totalAll) },
+          { label: "This Year", value: formatNaira(totalYear) },
+          { label: "Average Donation", value: formatNaira(avgAmount) },
+          { label: "Completed Donations", value: String(completedCount) },
         ].map((s) => (
           <div
             key={s.label}
@@ -235,37 +223,55 @@ export default function AdminDonationsPage() {
                   Reference
                 </th>
                 <th className="text-left px-4 py-3 text-xs text-white/40 font-medium uppercase tracking-wide">
-                  Type
+                  Status
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {DONATIONS.map((d) => (
-                <tr key={d.ref} className="hover:bg-white/3 transition-colors">
-                  <td className="px-5 py-3.5 text-white/70 font-medium text-sm">
-                    {d.donor}
-                  </td>
-                  <td className="px-4 py-3.5 text-white/40 text-xs hidden sm:table-cell">
-                    {d.cause}
-                  </td>
-                  <td className="px-4 py-3.5 text-white/80 font-semibold text-sm">
-                    {d.amount}
-                  </td>
-                  <td className="px-4 py-3.5 text-white/35 text-xs hidden md:table-cell">
-                    {d.date}
-                  </td>
-                  <td className="px-4 py-3.5 font-mono text-white/25 text-xs hidden lg:table-cell">
-                    {d.ref}
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <span
-                      className={`text-xs font-medium px-2 py-0.5 rounded-full border ${TYPE_STYLE[d.type]}`}
-                    >
-                      {d.type}
-                    </span>
+              {donations.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="px-5 py-10 text-center text-white/30 text-sm"
+                  >
+                    No donations yet.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                donations.map((d) => (
+                  <tr key={d.id} className="hover:bg-white/3 transition-colors">
+                    <td className="px-5 py-3.5 text-white/80">
+                      <div className="font-medium text-sm">
+                        {d.customerName ?? "Anonymous"}
+                      </div>
+                      <div className="text-xs text-white/40">
+                        {d.customerEmail}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5 text-white/40 text-xs hidden sm:table-cell">
+                      {getCause(d.metadata)}
+                    </td>
+                    <td className="px-4 py-3.5 text-white/80 font-semibold text-sm">
+                      {formatNaira(Number(d.amount))}
+                    </td>
+                    <td className="px-4 py-3.5 text-white/35 text-xs hidden md:table-cell">
+                      {(d.paidAt ?? d.createdAt).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </td>
+                    <td className="px-4 py-3.5 font-mono text-white/25 text-xs hidden lg:table-cell">
+                      {d.reference}
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full border bg-green-500/10 text-green-400 border-green-500/20">
+                        Completed
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

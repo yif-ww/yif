@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useSession, signOut } from "@/lib/auth-client";
 
 const NAV = [
   { href: "/dashboard", label: "Overview", icon: "⬡" },
@@ -19,6 +20,27 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session } = useSession();
+
+  const user = session?.user;
+  const initials = user?.name
+    ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "?";
+  const memberTier =
+    (user as { role?: string } | undefined)?.role === "admin"
+      ? "Admin"
+      : "Member";
+
+  async function handleSignOut() {
+    await signOut();
+    router.push("/login");
+  }
 
   return (
     <div className="flex min-h-screen bg-[var(--yif-navy-dark)]">
@@ -42,13 +64,13 @@ export default function DashboardLayout({
         <div className="mb-6 rounded-lg bg-white/5 px-3 py-3 border border-white/10">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-full bg-[var(--yif-gold)]/20 flex items-center justify-center text-[var(--yif-gold)] font-display font-semibold text-base">
-              A
+              {initials}
             </div>
             <div className="min-w-0">
               <p className="text-sm font-medium text-white truncate">
-                Adewale Okafor
+                {user?.name ?? "Member"}
               </p>
-              <p className="text-xs text-[var(--yif-gold)]">Gold Member</p>
+              <p className="text-xs text-[var(--yif-gold)]">{memberTier}</p>
             </div>
           </div>
         </div>
@@ -86,7 +108,10 @@ export default function DashboardLayout({
             <span className="text-base leading-none">←</span>
             Back to Website
           </Link>
-          <button className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-white/50 hover:bg-white/5 hover:text-white transition-all">
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-white/50 hover:bg-white/5 hover:text-white transition-all"
+          >
             <span className="text-base leading-none">⏻</span>
             Sign Out
           </button>
@@ -103,7 +128,7 @@ export default function DashboardLayout({
         </Link>
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 rounded-full bg-[var(--yif-gold)]/20 flex items-center justify-center text-[var(--yif-gold)] font-display font-semibold text-sm">
-            A
+            {initials}
           </div>
         </div>
       </div>

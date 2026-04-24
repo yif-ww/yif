@@ -29,6 +29,8 @@ const CAUSES = [
 
 const initial: DonateState = {};
 
+type User = { name: string; email: string };
+
 function fmt(n: number) {
   return new Intl.NumberFormat("en-NG", {
     style: "currency",
@@ -37,7 +39,7 @@ function fmt(n: number) {
   }).format(n);
 }
 
-export default function DonateForm() {
+export default function DonateForm({ user }: { user?: User | null }) {
   const [state, action, pending] = useActionState(initiateDonation, initial);
   const [frequency, setFrequency] = useState<"one-time" | "recurring">(
     "one-time",
@@ -177,40 +179,55 @@ export default function DonateForm() {
       </div>
 
       {/* Name */}
-      <div>
-        <label
-          htmlFor="donate-name"
-          className="mb-1.5 block text-sm font-medium text-[var(--yif-charcoal)]"
-        >
-          Full Name
-        </label>
-        <input
-          id="donate-name"
-          name="name"
-          type="text"
-          required
-          placeholder="Your full name"
-          className="w-full rounded-lg border border-[var(--yif-cream-dark)] bg-white px-3 py-2.5 text-sm text-[var(--yif-charcoal)] placeholder-[var(--muted)] focus:border-[var(--yif-gold)] focus:outline-none"
-        />
-      </div>
+      {user ? (
+        <>
+          <input type="hidden" name="name" value={user.name} />
+          <input type="hidden" name="email" value={user.email} />
+          <div className="flex items-center gap-2 rounded-lg border border-[var(--yif-gold)]/30 bg-[var(--yif-gold)]/5 px-3 py-2.5 text-sm">
+            <span className="text-[var(--yif-gold)]">✓</span>
+            <span className="text-[var(--yif-charcoal)]">
+              Donating as <strong>{user.name || user.email}</strong>
+            </span>
+          </div>
+        </>
+      ) : (
+        <>
+          <div>
+            <label
+              htmlFor="donate-name"
+              className="mb-1.5 block text-sm font-medium text-[var(--yif-charcoal)]"
+            >
+              Full Name
+            </label>
+            <input
+              id="donate-name"
+              name="name"
+              type="text"
+              required
+              placeholder="Your full name"
+              className="w-full rounded-lg border border-[var(--yif-cream-dark)] bg-white px-3 py-2.5 text-sm text-[var(--yif-charcoal)] placeholder-[var(--muted)] focus:border-[var(--yif-gold)] focus:outline-none"
+            />
+          </div>
 
-      {/* Email */}
-      <div>
-        <label
-          htmlFor="donate-email"
-          className="mb-1.5 block text-sm font-medium text-[var(--yif-charcoal)]"
-        >
-          Email Address
-        </label>
-        <input
-          id="donate-email"
-          name="email"
-          type="email"
-          required
-          placeholder="you@example.com"
-          className="w-full rounded-lg border border-[var(--yif-cream-dark)] bg-white px-3 py-2.5 text-sm text-[var(--yif-charcoal)] placeholder-[var(--muted)] focus:border-[var(--yif-gold)] focus:outline-none"
-        />
-      </div>
+          {/* Email */}
+          <div>
+            <label
+              htmlFor="donate-email"
+              className="mb-1.5 block text-sm font-medium text-[var(--yif-charcoal)]"
+            >
+              Email Address
+            </label>
+            <input
+              id="donate-email"
+              name="email"
+              type="email"
+              required
+              placeholder="you@example.com"
+              className="w-full rounded-lg border border-[var(--yif-cream-dark)] bg-white px-3 py-2.5 text-sm text-[var(--yif-charcoal)] placeholder-[var(--muted)] focus:border-[var(--yif-gold)] focus:outline-none"
+            />
+          </div>
+        </>
+      )}
 
       {displayAmount > 0 && (
         <div className="rounded-lg bg-[var(--yif-navy)]/5 border border-[var(--yif-navy)]/10 p-3 text-sm text-[var(--yif-navy)]">

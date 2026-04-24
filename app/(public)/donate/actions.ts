@@ -5,6 +5,7 @@ import {
   toKobo,
   type TransactionInitData,
 } from "@/lib/paystack";
+import { recordTransactionInit } from "@/lib/transactions";
 import { redirect } from "next/navigation";
 
 export type DonateState = {
@@ -70,6 +71,17 @@ export async function initiateDonation(
           },
         }),
       },
+    );
+
+    await recordTransactionInit({
+      reference: result.data.reference,
+      purpose: "DONATION",
+      amountNaira: amount,
+      customerEmail: email,
+      customerName: name,
+      metadata: { cause, frequency },
+    }).catch((err) =>
+      console.error("[initiateDonation] tx init record failed:", err),
     );
 
     redirect(result.data.authorization_url);

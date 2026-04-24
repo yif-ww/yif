@@ -1,111 +1,62 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "My Donations | YIF Member Portal",
 };
 
-const ALL_DONATIONS = [
-  {
-    ref: "PS-ABC123",
-    cause: "Scholarship Fund",
-    amount: "₦25,000",
-    date: "Apr 10, 2026",
-    method: "Card",
-    type: "One-time",
-    status: "completed",
-    year: 2026,
-  },
-  {
-    ref: "PS-DEF456",
-    cause: "Karo-Ojire Cultural Fund",
-    amount: "₦15,000",
-    date: "Mar 5, 2026",
-    method: "Card",
-    type: "One-time",
-    status: "completed",
-    year: 2026,
-  },
-  {
-    ref: "PS-GHI789",
-    cause: "General Fund",
-    amount: "₦10,000",
-    date: "Feb 1, 2026",
-    method: "Transfer",
-    type: "Monthly",
-    status: "completed",
-    year: 2026,
-  },
-  {
-    ref: "PS-JKL012",
-    cause: "General Fund",
-    amount: "₦10,000",
-    date: "Jan 1, 2026",
-    method: "Transfer",
-    type: "Monthly",
-    status: "completed",
-    year: 2026,
-  },
-  {
-    ref: "PS-MNO345",
-    cause: "Youth Development Fund",
-    amount: "₦20,000",
-    date: "Dec 12, 2025",
-    method: "Card",
-    type: "One-time",
-    status: "completed",
-    year: 2025,
-  },
-  {
-    ref: "PS-PQR678",
-    cause: "General Fund",
-    amount: "₦10,000",
-    date: "Nov 1, 2025",
-    method: "Transfer",
-    type: "Monthly",
-    status: "completed",
-    year: 2025,
-  },
-  {
-    ref: "PS-STU901",
-    cause: "Scholarship Fund",
-    amount: "₦50,000",
-    date: "Jul 4, 2025",
-    method: "Card",
-    type: "One-time",
-    status: "completed",
-    year: 2025,
-  },
-  {
-    ref: "PS-VWX234",
-    cause: "General Fund",
-    amount: "₦10,000",
-    date: "Jun 1, 2025",
-    method: "Transfer",
-    type: "Monthly",
-    status: "completed",
-    year: 2025,
-  },
-];
+export default async function DonationsPage() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) redirect("/login");
 
-const CAUSE_COLORS: Record<string, string> = {
-  "Scholarship Fund": "text-[var(--yif-gold)]",
-  "Karo-Ojire Cultural Fund": "text-[var(--yif-terracotta)]",
-  "General Fund": "text-[var(--yif-green)]",
-  "Youth Development Fund": "text-[#7b8fcf]",
-};
+  const [donations, stats] = await Promise.all([
+    prisma.donation.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.donation.aggregate({
+      where: { userId: session.user.id, status: "COMPLETED" },
+      _sum: { amount: true },
+      _count: { id: true },
+    }),
+  ]);
 
-const SUMMARY = [
-  { label: "Total Donated (All Time)", value: "₦185,000" },
-  { label: "This Year (2026)", value: "₦60,000" },
-  { label: "Transactions", value: "12" },
-  { label: "Active Recurring", value: "₦10,000/mo" },
-];
+  const currentYear = new Date().getFullYear();
+  const thisYearTotal = donations
+    .filter(
+      (d) =>
+        d.status === "COMPLETED" &&
+        new Date(d.createdAt).getFullYear() === currentYear,
+    )
+    .reduce((acc, d) => acc + Number(d.amount), 0);
 
-export default function DonationsPage() {
-  const years = [...new Set(ALL_DONATIONS.map((d) => d.year))].sort(
-    (a, b) => b - a,
-  );
+  const totalDonated = stats._sum.amount ? Number(stats._sum.amount) : 0;
+  const totalCount = stats._count.id;
+
+  const summary = [
+    {
+      label: "Total Donated (All Time)",
+      value: `₦${totalDonated.toLocaleString("en-NG")}`,
+    },
+    {
+      label: `This Year (${currentYear})`,
+      value: `₦${thisYearTotal.toLocaleString("en-NG")}`,
+    },
+    { label: "Transactions", value: String(totalCount) },
+  ];
+
+  // Group by year
+  const byYear = new Map<number, typeof donations>();
+  for (const d of donations) {
+    const y = new Date(d.createdAt).getFullYear();
+    if (!byYear.has(y)) byYear.set(y, []);
+    byYear.get(y)!.push(d);
+  }
+  const years = [...byYear.keys()].sort((a, b) => b - a);
 
   return (
     <div className="min-h-screen bg-[var(--yif-navy-dark)] px-4 py-8 sm:px-6 lg:px-8">
@@ -124,8 +75,8 @@ export default function DonationsPage() {
       </div>
 
       {/* Summary stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-        {SUMMARY.map((s) => (
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-8">
+        {summary.map((s) => (
           <div
             key={s.label}
             className="rounded-xl bg-white/5 border border-white/10 px-4 py-4"
@@ -164,81 +115,89 @@ export default function DonationsPage() {
       </div>
 
       {/* Grouped by year */}
-      <div className="space-y-8">
-        {years.map((year) => {
-          const yearDonations = ALL_DONATIONS.filter((d) => d.year === year);
-          const yearTotal = yearDonations.reduce((acc, d) => {
-            const num = parseInt(d.amount.replace(/[₦,]/g, ""), 10);
-            return acc + num;
-          }, 0);
+      {donations.length === 0 ? (
+        <div className="rounded-xl bg-white/5 border border-white/10 px-5 py-12 text-center text-white/40 text-sm">
+          No donations yet.{" "}
+          <Link
+            href="/donate"
+            className="text-[var(--yif-gold)] hover:underline"
+          >
+            Make your first donation →
+          </Link>
+        </div>
+      ) : (
+        <div className="space-y-8">
+          {years.map((year) => {
+            const yearDonations = byYear.get(year)!;
+            const yearTotal = yearDonations
+              .filter((d) => d.status === "COMPLETED")
+              .reduce((acc, d) => acc + Number(d.amount), 0);
 
-          return (
-            <section key={year}>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-display text-lg font-semibold text-white">
-                  {year}
-                </h2>
-                <span className="text-sm text-[var(--yif-gold)] font-semibold">
-                  ₦{yearTotal.toLocaleString()} total
-                </span>
-              </div>
-              <div className="rounded-xl bg-white/5 border border-white/10 overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left px-5 py-3 text-xs text-white/40 uppercase tracking-wider font-medium">
-                        Cause
-                      </th>
-                      <th className="text-left px-4 py-3 text-xs text-white/40 uppercase tracking-wider font-medium hidden sm:table-cell">
-                        Date
-                      </th>
-                      <th className="text-left px-4 py-3 text-xs text-white/40 uppercase tracking-wider font-medium hidden md:table-cell">
-                        Type
-                      </th>
-                      <th className="text-right px-5 py-3 text-xs text-white/40 uppercase tracking-wider font-medium">
-                        Amount
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {yearDonations.map((d) => (
-                      <tr
-                        key={d.ref}
-                        className="hover:bg-white/5 transition-colors"
-                      >
-                        <td className="px-5 py-4">
-                          <p
-                            className={`font-medium ${CAUSE_COLORS[d.cause] ?? "text-white/70"}`}
-                          >
-                            {d.cause}
-                          </p>
-                          <p className="text-xs text-white/30 font-mono mt-0.5">
-                            {d.ref}
-                          </p>
-                        </td>
-                        <td className="px-4 py-4 text-white/40 hidden sm:table-cell">
-                          {d.date}
-                        </td>
-                        <td className="px-4 py-4 hidden md:table-cell">
-                          <span className="rounded-full bg-white/10 text-white/50 text-xs px-2 py-0.5">
-                            {d.type}
-                          </span>
-                        </td>
-                        <td className="px-5 py-4 text-right">
-                          <p className="font-semibold text-white">{d.amount}</p>
-                          <p className="text-xs text-[var(--yif-green)] mt-0.5">
-                            {d.status}
-                          </p>
-                        </td>
+            return (
+              <section key={year}>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="font-display text-lg font-semibold text-white">
+                    {year}
+                  </h2>
+                  <span className="text-sm text-[var(--yif-gold)] font-semibold">
+                    ₦{yearTotal.toLocaleString("en-NG")} total
+                  </span>
+                </div>
+                <div className="rounded-xl bg-white/5 border border-white/10 overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-white/10">
+                        <th className="text-left px-5 py-3 text-xs text-white/40 uppercase tracking-wider font-medium">
+                          Cause
+                        </th>
+                        <th className="text-left px-4 py-3 text-xs text-white/40 uppercase tracking-wider font-medium hidden sm:table-cell">
+                          Date
+                        </th>
+                        <th className="text-right px-5 py-3 text-xs text-white/40 uppercase tracking-wider font-medium">
+                          Amount
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          );
-        })}
-      </div>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {yearDonations.map((d) => (
+                        <tr
+                          key={d.id}
+                          className="hover:bg-white/5 transition-colors"
+                        >
+                          <td className="px-5 py-4">
+                            <p className="font-medium text-white/70">
+                              {d.cause}
+                            </p>
+                            <p className="text-xs text-white/30 font-mono mt-0.5">
+                              {d.reference}
+                            </p>
+                          </td>
+                          <td className="px-4 py-4 text-white/40 hidden sm:table-cell">
+                            {new Date(d.createdAt).toLocaleDateString("en-GB", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </td>
+                          <td className="px-5 py-4 text-right">
+                            <p className="font-semibold text-white">
+                              ₦{Number(d.amount).toLocaleString("en-NG")}
+                            </p>
+                            <p className="text-xs text-[var(--yif-green)] mt-0.5">
+                              {d.status.charAt(0) +
+                                d.status.slice(1).toLowerCase()}
+                            </p>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      )}
 
       {/* CTA */}
       <div className="mt-10 text-center">

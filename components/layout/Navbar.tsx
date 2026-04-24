@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { signOut, useSession } from "@/lib/auth-client";
 import { TrustBadge } from "./TrustBadge";
 
 const NAV_LINKS = [
@@ -16,6 +17,9 @@ const NAV_LINKS = [
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session } = useSession();
+  const user = session?.user ?? null;
 
   return (
     <header className="relative z-50">
@@ -62,12 +66,34 @@ export function Navbar() {
 
           {/* Desktop CTAs */}
           <div className="hidden items-center gap-3 lg:flex">
-            <Link
-              href="/login"
-              className="text-sm font-medium text-white/80 hover:text-[var(--yif-gold)] transition-colors"
-            >
-              Member Login
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="text-sm font-medium text-white/80 hover:text-[var(--yif-gold)] transition-colors"
+                >
+                  {user.name ?? user.email}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() =>
+                    signOut({
+                      fetchOptions: { onSuccess: () => router.refresh() },
+                    })
+                  }
+                  className="text-sm font-medium text-white/60 hover:text-white/90 transition-colors"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="text-sm font-medium text-white/80 hover:text-[var(--yif-gold)] transition-colors"
+              >
+                Member Login
+              </Link>
+            )}
             <Link
               href="/donate"
               className="rounded-full bg-[var(--yif-gold)] px-5 py-2 text-sm font-semibold text-[var(--yif-navy)] transition-all hover:bg-[var(--yif-gold-light)] hover:shadow-[0_0_20px_rgba(201,145,61,0.4)]"
@@ -110,13 +136,37 @@ export function Navbar() {
               ))}
             </ul>
             <div className="mt-6 flex flex-col gap-3">
-              <Link
-                href="/login"
-                className="block text-center text-sm font-medium text-white/80 hover:text-[var(--yif-gold)] transition-colors"
-                onClick={() => setMenuOpen(false)}
-              >
-                Member Login
-              </Link>
+              {user ? (
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="block text-center text-sm font-medium text-white/80 hover:text-[var(--yif-gold)] transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {user.name ?? user.email}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      signOut({
+                        fetchOptions: { onSuccess: () => router.refresh() },
+                      });
+                    }}
+                    className="block w-full text-center text-sm font-medium text-white/60 hover:text-white/90 transition-colors"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="block text-center text-sm font-medium text-white/80 hover:text-[var(--yif-gold)] transition-colors"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Member Login
+                </Link>
+              )}
               <Link
                 href="/donate"
                 className="block rounded-full bg-[var(--yif-gold)] px-5 py-2.5 text-center text-sm font-semibold text-[var(--yif-navy)] hover:bg-[var(--yif-gold-light)]"

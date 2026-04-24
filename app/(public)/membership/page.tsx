@@ -9,11 +9,11 @@ export const metadata: Metadata = {
 
 const TIERS = [
   {
-    name: "Yoruba Community",
-    slug: "community",
+    name: "Silver",
+    slug: "silver",
     price: "₦5,000",
     period: "/year",
-    color: "#2d6a4f",
+    color: "#7f8c8d",
     badge: null,
     summary: "Start your journey as a YIF community member.",
     benefits: [
@@ -25,15 +25,15 @@ const TIERS = [
     ],
   },
   {
-    name: "Silver",
-    slug: "silver",
-    price: "₦25,000",
+    name: "Gold",
+    slug: "gold",
+    price: "₦10,000",
     period: "/year",
-    color: "#7f8c8d",
+    color: "#c9913d",
     badge: null,
     summary: "Full member privileges with voting rights.",
     benefits: [
-      "All Community benefits",
+      "All Silver benefits",
       "10% discount on event tickets",
       "Voting rights at general meetings",
       "Mentorship programme access",
@@ -41,15 +41,15 @@ const TIERS = [
     ],
   },
   {
-    name: "Gold",
-    slug: "gold",
-    price: "₦50,000",
+    name: "Diamond",
+    slug: "diamond",
+    price: "₦15,000",
     period: "/year",
-    color: "#c9913d",
+    color: "#9b59b6",
     badge: "Most Popular",
     summary: "Enhanced access and scholarship nomination rights.",
     benefits: [
-      "All Silver benefits",
+      "All Gold benefits",
       "20% discount on event tickets",
       "Priority event registration",
       "Scholarship nomination rights",
@@ -60,36 +60,18 @@ const TIERS = [
   {
     name: "Platinum",
     slug: "platinum",
-    price: "₦100,000",
+    price: "₦20,000",
     period: "/year",
     color: "#5dade2",
-    badge: null,
-    summary: "Leadership-level recognition and programme access.",
+    badge: "Elite",
+    summary: "Leadership-level recognition and board access.",
     benefits: [
-      "All Gold benefits",
+      "All Diamond benefits",
       "Complimentary annual gala seat",
       "Name in printed annual report",
       "Programme committee invite",
       "Dedicated member liaison officer",
       "Exclusive networking receptions",
-    ],
-  },
-  {
-    name: "Diamond",
-    slug: "diamond",
-    price: "₦250,000",
-    period: "/year",
-    color: "#9b59b6",
-    badge: "Elite",
-    summary: "Board-level access and maximum visibility.",
-    benefits: [
-      "All Platinum benefits",
-      "Board observer seat",
-      "Co-branding on YIF initiatives",
-      "VIP access at all YIF events",
-      "Dedicated sponsorship package",
-      "Direct line to Executive Director",
-      "Annual strategy summit invitation",
     ],
   },
 ];
@@ -200,7 +182,7 @@ export default function MembershipPage() {
               Member Portal.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {TIERS.map((tier) => (
               <div
                 key={tier.slug}
@@ -254,7 +236,7 @@ export default function MembershipPage() {
                 </div>
                 <div className="px-5 pb-5">
                   <Link
-                    href="/login"
+                    href={`/membership/apply?tier=${tier.slug}`}
                     className="block w-full text-center rounded-xl py-2.5 text-sm font-semibold transition-colors text-white"
                     style={{ backgroundColor: tier.color }}
                   >
@@ -301,16 +283,16 @@ export default function MembershipPage() {
                   { label: "Newsletter & community", from: 0 },
                   { label: "Cultural event invitations", from: 0 },
                   { label: "Member directory listing", from: 0 },
-                  { label: "Event ticket discount", from: 1 },
+                  { label: "Event ticket discount (10%)", from: 1 },
                   { label: "Voting rights", from: 1 },
                   { label: "Mentorship programme", from: 1 },
+                  { label: "Event ticket discount (20%)", from: 2 },
                   { label: "Scholarship nominations", from: 2 },
                   { label: "Priority registration", from: 2 },
                   { label: "Quarterly board briefings", from: 2 },
                   { label: "Annual gala seat", from: 3 },
                   { label: "Annual report listing", from: 3 },
-                  { label: "Board observer seat", from: 4 },
-                  { label: "VIP access at all events", from: 4 },
+                  { label: "Programme committee invite", from: 3 },
                 ].map((row) => (
                   <tr
                     key={row.label}

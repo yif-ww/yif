@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { submitScholarship } from "./actions";
 
 const STEPS = [
   { id: 1, title: "Personal Info" },
@@ -53,8 +54,6 @@ const INITIAL: FormData = {
   essay2: "",
 };
 
-const STATES = ["Ekiti", "Lagos", "Ogun", "Ondo", "Osun", "Oyo", "Diaspora"];
-
 const DEGREES = [
   "B.Sc.",
   "B.A.",
@@ -80,6 +79,8 @@ export default function ScholarshipPage() {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<FormData>(INITIAL);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const set =
     (field: keyof FormData) =>
@@ -246,7 +247,7 @@ export default function ScholarshipPage() {
                 type="tel"
                 value={form.phone}
                 onChange={set("phone")}
-                placeholder="+234 800 000 0000"
+                placeholder="+1 800 000 0000"
               />
               <Field
                 label="Date of Birth"
@@ -255,26 +256,25 @@ export default function ScholarshipPage() {
                 onChange={set("dateOfBirth")}
                 required
               />
-              <SelectField
-                label="State of Origin"
+              <Field
+                label="Country / Region of Origin"
                 value={form.stateOfOrigin}
                 onChange={set("stateOfOrigin")}
-                options={STATES}
-                placeholder="Select state"
+                placeholder="e.g. Nigeria, United Kingdom, USA"
                 required
               />
               <Field
-                label="LGA"
+                label="City / District"
                 value={form.lga}
                 onChange={set("lga")}
-                placeholder="Ibadan North"
+                placeholder="e.g. Lagos, London, Houston"
               />
               <div className="sm:col-span-2">
                 <Field
                   label="Residential Address"
                   value={form.address}
                   onChange={set("address")}
-                  placeholder="House No, Street, City, State"
+                  placeholder="Street, City, Country"
                 />
               </div>
             </div>
@@ -379,7 +379,7 @@ export default function ScholarshipPage() {
                 </label>
                 <p className="text-xs text-white/35 mb-2">
                   How do you plan to use your education to serve the Yoruba
-                  community and broader Nigerian society?
+                  community and the broader global Yoruba diaspora?
                 </p>
                 <textarea
                   className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none focus:border-[var(--yif-gold)]/50 transition-colors resize-none"
@@ -414,8 +414,8 @@ export default function ScholarshipPage() {
                   label="Date of Birth"
                   value={form.dateOfBirth || "—"}
                 />
-                <ReviewRow label="State" value={form.stateOfOrigin || "—"} />
-                <ReviewRow label="LGA" value={form.lga || "—"} />
+                <ReviewRow label="Region" value={form.stateOfOrigin || "—"} />
+                <ReviewRow label="City / District" value={form.lga || "—"} />
               </ReviewSection>
               <ReviewSection title="Academic Information">
                 <ReviewRow label="Institution" value={form.school} />
@@ -469,12 +469,28 @@ export default function ScholarshipPage() {
               Continue →
             </button>
           ) : (
-            <button
-              onClick={() => setSubmitted(true)}
-              className="rounded-lg bg-[var(--yif-green)] text-white text-sm px-6 py-2.5 font-semibold hover:opacity-90 transition-opacity ml-auto"
-            >
-              Submit Application
-            </button>
+            <>
+              {submitError && (
+                <p className="text-red-400 text-xs mr-auto">{submitError}</p>
+              )}
+              <button
+                disabled={isPending}
+                onClick={() => {
+                  setSubmitError(null);
+                  startTransition(async () => {
+                    const res = await submitScholarship(form);
+                    if (res.success) {
+                      setSubmitted(true);
+                    } else {
+                      setSubmitError(res.error ?? "Submission failed.");
+                    }
+                  });
+                }}
+                className="rounded-lg bg-[var(--yif-green)] text-white text-sm px-6 py-2.5 font-semibold hover:opacity-90 transition-opacity ml-auto disabled:opacity-60"
+              >
+                {isPending ? "Submitting…" : "Submit Application"}
+              </button>
+            </>
           )}
         </div>
       </div>

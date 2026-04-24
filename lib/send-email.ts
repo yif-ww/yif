@@ -5,6 +5,12 @@ import TicketConfirmationEmail, {
 import DonationThankYouEmail, {
   type DonationThankYouEmailProps,
 } from "@/emails/DonationThankYouEmail";
+import MembershipWelcomeEmail, {
+  type MembershipWelcomeEmailProps,
+} from "@/emails/MembershipWelcomeEmail";
+import MembershipInitializationEmail, {
+  type MembershipInitializationEmailProps,
+} from "@/emails/MembershipInitializationEmail";
 import { createElement } from "react";
 
 export type TicketEmailData = Omit<TicketConfirmationEmailProps, never>;
@@ -59,6 +65,61 @@ export async function sendDonationThankYou(
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[sendDonationThankYou] Unexpected error:", message);
+    return { success: false, error: message };
+  }
+}
+
+export type MembershipEmailData = Omit<MembershipWelcomeEmailProps, never>;
+
+export async function sendMembershipWelcome(
+  data: MembershipEmailData,
+): Promise<EmailResult> {
+  try {
+    const { error } = await resend.emails.send({
+      from: `YIF <${FROM_EMAIL}>`,
+      to: [data.recipientEmail],
+      subject: `Welcome to YIF — Your ${data.tierName} Membership is Active`,
+      react: createElement(MembershipWelcomeEmail, data),
+    });
+
+    if (error) {
+      console.error("[sendMembershipWelcome] Resend error:", error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[sendMembershipWelcome] Unexpected error:", message);
+    return { success: false, error: message };
+  }
+}
+
+export type MembershipInitializationEmailData = Omit<
+  MembershipInitializationEmailProps,
+  never
+>;
+
+export async function sendMembershipInitialization(
+  data: MembershipInitializationEmailData,
+): Promise<EmailResult> {
+  try {
+    const { error } = await resend.emails.send({
+      from: `YIF <${FROM_EMAIL}>`,
+      to: [data.recipientEmail],
+      subject: `Complete Your YIF ${data.tierName} Membership Payment`,
+      react: createElement(MembershipInitializationEmail, data),
+    });
+
+    if (error) {
+      console.error("[sendMembershipInitialization] Resend error:", error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[sendMembershipInitialization] Unexpected error:", message);
     return { success: false, error: message };
   }
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import LoginForm from "./_LoginForm";
 
 export const metadata: Metadata = {
   title: "Sign In | YIF Member Portal",
@@ -80,65 +81,7 @@ export default function LoginPage() {
             Sign in to access your dashboard, tickets, and membership benefits.
           </p>
 
-          <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-xs text-white/60 mb-1.5 font-medium uppercase tracking-wide"
-              >
-                Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                autoComplete="email"
-                placeholder="you@example.com"
-                className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none focus:border-[var(--yif-gold)]/50 transition-colors"
-              />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label
-                  htmlFor="password"
-                  className="text-xs text-white/60 font-medium uppercase tracking-wide"
-                >
-                  Password
-                </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-xs text-[var(--yif-gold)] hover:underline"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-              <input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="••••••••"
-                className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none focus:border-[var(--yif-gold)]/50 transition-colors"
-              />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                id="remember"
-                type="checkbox"
-                className="w-4 h-4 rounded border border-white/20 bg-white/5 accent-[var(--yif-gold)]"
-              />
-              <label htmlFor="remember" className="text-xs text-white/50">
-                Keep me signed in
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full rounded-xl bg-[var(--yif-gold)] text-[var(--yif-navy-dark)] py-3 font-semibold text-sm hover:bg-[var(--yif-gold-light)] transition-colors"
-            >
-              Sign In
-            </button>
-          </form>
+          <LoginForm />
 
           <p className="mt-8 text-center text-sm text-white/40">
             Not a member yet?{" "}
