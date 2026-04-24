@@ -1,10 +1,12 @@
 "use server";
 
+import { paystackRequest, type TransactionInitData } from "@/lib/paystack";
 import {
-  paystackRequest,
-  toKobo,
-  type TransactionInitData,
-} from "@/lib/paystack";
+  CURRENCIES,
+  isSupportedCurrency,
+  toSmallestUnit,
+  type SupportedCurrency,
+} from "@/lib/currency";
 import { recordTransactionInit } from "@/lib/transactions";
 import { redirect } from "next/navigation";
 
@@ -21,8 +23,14 @@ export async function initiateDonation(
   const cause = (formData.get("cause") as string | null) ?? "General Fund";
   const frequency = (formData.get("frequency") as string | null) ?? "one-time";
   const rawAmount = (formData.get("amount") as string | null) ?? "";
+  const rawCurrency = (formData.get("currency") as string | null) ?? "NGN";
 
-  const amount = parseInt(rawAmount.replace(/[^0-9]/g, ""), 10);
+  const currency: SupportedCurrency = isSupportedCurrency(rawCurrency)
+    ? rawCurrency
+    : "NGN";
+  const config = CURRENCIES[currency];
+
+  const amount = parseFloat(rawAmount.replace(/[^0-9.]/g, ""));
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { error: "Please enter a valid email address." };
@@ -30,11 +38,15 @@ export async function initiateDonation(
   if (!name) {
     return { error: "Please enter your full name." };
   }
-  if (!amount || amount < 100) {
-    return { error: "Minimum donation amount is ₦100." };
+  if (!amount || amount < config.min) {
+    return {
+      error: `Minimum donation amount is ${config.symbol}${config.min}.`,
+    };
   }
-  if (amount > 10_000_000) {
-    return { error: "Please contact us for donations above ₦10,000,000." };
+  if (amount > config.max) {
+    return {
+      error: `Please contact us for donations above ${config.symbol}${config.max.toLocaleString()}.`,
+    };
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
@@ -46,7 +58,8 @@ export async function initiateDonation(
         method: "POST",
         body: JSON.stringify({
           email,
-          amount: toKobo(amount).toString(),
+          amount: toSmallestUnit(amount).toString(),
+          currency,
           callback_url: `${appUrl}/payment/callback`,
           metadata: {
             cancel_action: `${appUrl}/donate`,
@@ -77,9 +90,10 @@ export async function initiateDonation(
       reference: result.data.reference,
       purpose: "DONATION",
       amountNaira: amount,
+      currency,
       customerEmail: email,
       customerName: name,
-      metadata: { cause, frequency },
+      metadata: { cause, frequency, currency },
     }).catch((err) =>
       console.error("[initiateDonation] tx init record failed:", err),
     );

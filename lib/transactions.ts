@@ -14,6 +14,7 @@ export async function recordTransactionInit(input: {
   reference: string;
   purpose: TransactionPurpose;
   amountNaira: number;
+  currency?: string;
   customerEmail: string;
   customerName?: string | null;
   customerPhone?: string | null;
@@ -29,7 +30,7 @@ export async function recordTransactionInit(input: {
     purpose: input.purpose,
     status: "PENDING" as TransactionStatus,
     amount: input.amountNaira,
-    currency: "NGN",
+    currency: input.currency ?? "NGN",
     customerEmail: input.customerEmail,
     customerName: input.customerName ?? null,
     customerPhone: input.customerPhone ?? null,
