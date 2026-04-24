@@ -1,8 +1,12 @@
 import Link from "next/link";
+import { AnkaraTexture } from "@/components/shared/AnkaraBorder";
 
 export function CtaBanner() {
   return (
     <section className="relative bg-[var(--yif-navy-dark)] py-20 sm:py-28 overflow-hidden">
+      {/* Ankara diagonal weave texture */}
+      <AnkaraTexture pattern="diagonal" opacity={0.07} />
+
       {/* Decorative concentric circles — left */}
       <div
         aria-hidden

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { TrustBadge } from "./TrustBadge";
+import { AnkaraBorder } from "@/components/shared/AnkaraBorder";
 
 const FOOTER_LINKS = {
   organization: [
@@ -50,8 +51,8 @@ export function Footer() {
 
   return (
     <footer className="bg-[var(--yif-navy)] text-white">
-      {/* Decorative gold divider */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-[var(--yif-gold)] to-transparent" />
+      {/* Ankara textile seam — decorative top border */}
+      <AnkaraBorder variant="top" heightClass="h-14 sm:h-18 md:h-22" />
 
       <div className="mx-auto max-w-7xl px-4 pb-10 pt-14 sm:px-6 lg:px-8">
         {/* Top: logo + mission + socials */}

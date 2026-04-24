@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { TrustBadge } from "@/components/layout/TrustBadge";
+import { AnkaraBorder } from "@/components/shared/AnkaraBorder";
 
 const SPOKES = [0, 45, 90, 135, 180, 225, 270, 315];
 
@@ -183,6 +184,11 @@ export function HeroSection() {
       >
         <span className="text-[10px] uppercase tracking-[0.3em]">Scroll</span>
         <div className="w-px h-7 bg-gradient-to-b from-white/25 to-transparent" />
+      </div>
+
+      {/* Ankara textile seam — decorative bottom border */}
+      <div className="absolute bottom-0 left-0 right-0 z-20">
+        <AnkaraBorder variant="bottom" heightClass="h-14 sm:h-18 md:h-22" />
       </div>
     </section>
   );
