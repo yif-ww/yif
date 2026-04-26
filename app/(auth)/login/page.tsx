@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import LoginForm from "./_LoginForm";
 
@@ -81,7 +82,9 @@ export default function LoginPage() {
             Sign in to access your dashboard, tickets, and membership benefits.
           </p>
 
-          <LoginForm />
+          <Suspense fallback={null}>
+            <LoginForm />
+          </Suspense>
 
           <p className="mt-8 text-center text-sm text-white/40">
             Not a member yet?{" "}
