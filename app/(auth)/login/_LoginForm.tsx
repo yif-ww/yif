@@ -24,7 +24,8 @@ export default function LoginForm() {
         const role = (result.data?.user as { role?: string } | null)?.role;
         router.push(role === "admin" ? "/admin/dashboard" : "/dashboard");
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
