@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 /* ── Data ─────────────────────────────────────────── */
 
-const phones = ["+234(080)25266285", "+234(080)22889403", "+234(080)25266714"];
+const phones = ["+234 816 919 9745", "+1 (917) 703-0107", "+234 802 288 9403"];
 
 const emails = ["info@yifworldwide.org", "yorubaindigenesfoundation@yahoo.com"];
 
@@ -245,7 +245,7 @@ export default function ContactPage() {
                   Quick Connect
                 </p>
                 <a
-                  href="https://wa.me/2348025266285"
+                  href="https://wa.me/2348169199745"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-3 rounded-xl bg-[#25D366] px-6 py-3.5 text-white font-semibold text-sm hover:bg-[#1ebe59] transition-colors"

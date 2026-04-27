@@ -101,10 +101,18 @@ export function Footer() {
               <div className="mt-3 space-y-1">
                 <p>
                   <a
-                    href="tel:+2348025266285"
+                    href="tel:+2348169199745"
                     className="hover:text-[var(--yif-gold)] transition-colors"
                   >
-                    +234 (080) 2526 6285
+                    +234 816 919 9745
+                  </a>
+                </p>
+                <p>
+                  <a
+                    href="tel:+19177030107"
+                    className="hover:text-[var(--yif-gold)] transition-colors"
+                  >
+                    +1 (917) 703-0107
                   </a>
                 </p>
                 <p>
@@ -112,15 +120,7 @@ export function Footer() {
                     href="tel:+2348022889403"
                     className="hover:text-[var(--yif-gold)] transition-colors"
                   >
-                    +234 (080) 2288 9403
-                  </a>
-                </p>
-                <p>
-                  <a
-                    href="tel:+2348025266714"
-                    className="hover:text-[var(--yif-gold)] transition-colors"
-                  >
-                    +234 (080) 2526 6714
+                    +234 802 288 9403
                   </a>
                 </p>
               </div>

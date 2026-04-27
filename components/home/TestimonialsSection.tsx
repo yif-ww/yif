@@ -9,7 +9,7 @@ const TESTIMONIALS = [
   {
     quote:
       "The scholarship Program opened doors I never thought possible. As a young Yoruba student studying abroad, having YIF's support meant I could pursue excellence without the financial burden holding me back.",
-    name: "Adaeze Okafor",
+    name: "Kayode Abimbola",
     title: "YIF Scholarship Recipient",
     initials: "AO",
   },
