@@ -87,7 +87,7 @@ export default function TicketForm() {
             name="name"
             required
             autoComplete="name"
-            className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
+            className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm text-[var(--yif-charcoal)] placeholder:text-[var(--yif-charcoal)]/40 focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
           />
         </label>
         <label className="block">
@@ -99,7 +99,7 @@ export default function TicketForm() {
             name="email"
             required
             autoComplete="email"
-            className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
+            className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm text-[var(--yif-charcoal)] placeholder:text-[var(--yif-charcoal)]/40 focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
           />
         </label>
         <label className="block">
@@ -110,7 +110,7 @@ export default function TicketForm() {
             type="tel"
             name="phone"
             autoComplete="tel"
-            className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
+            className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm text-[var(--yif-charcoal)] placeholder:text-[var(--yif-charcoal)]/40 focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
           />
         </label>
         <label className="block">
@@ -121,7 +121,7 @@ export default function TicketForm() {
             type="text"
             name="country"
             autoComplete="country-name"
-            className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
+            className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm text-[var(--yif-charcoal)] placeholder:text-[var(--yif-charcoal)]/40 focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
           />
         </label>
       </div>
@@ -151,7 +151,7 @@ export default function TicketForm() {
                 Math.max(1, Math.min(20, parseInt(e.target.value || "1", 10))),
               )
             }
-            className="w-16 border-0 bg-transparent text-center text-sm font-semibold focus:outline-none"
+            className="w-16 border-0 bg-transparent text-center text-sm font-semibold text-[var(--yif-charcoal)] focus:outline-none"
           />
           <button
             type="button"

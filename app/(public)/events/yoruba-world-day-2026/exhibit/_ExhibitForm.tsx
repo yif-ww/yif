@@ -41,7 +41,7 @@ export default function ExhibitForm() {
           <select
             name="sector"
             defaultValue=""
-            className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
+            className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm text-[var(--yif-charcoal)] focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
           >
             <option value="">Select a sector</option>
             {YWD_SECTORS.map((s) => (
@@ -59,7 +59,7 @@ export default function ExhibitForm() {
           <select
             name="boothSize"
             defaultValue=""
-            className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
+            className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm text-[var(--yif-charcoal)] focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
           >
             <option value="">No preference</option>
             <option value="Small (3×3 m)">Small (3×3 m)</option>
@@ -89,7 +89,7 @@ export default function ExhibitForm() {
           name="products"
           required
           rows={3}
-          className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
+          className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm text-[var(--yif-charcoal)] placeholder:text-[var(--yif-charcoal)]/40 focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
         />
       </label>
 
@@ -101,7 +101,7 @@ export default function ExhibitForm() {
           name="message"
           rows={4}
           placeholder="Special requirements, target audience, partnership ideas…"
-          className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
+          className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm text-[var(--yif-charcoal)] placeholder:text-[var(--yif-charcoal)]/40 focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
         />
       </label>
 
@@ -142,7 +142,7 @@ function Field({
         type={type}
         name={name}
         required={required}
-        className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
+        className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm text-[var(--yif-charcoal)] placeholder:text-[var(--yif-charcoal)]/40 focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
       />
     </label>
   );

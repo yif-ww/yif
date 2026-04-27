@@ -41,7 +41,7 @@ export default function SponsorForm() {
           <select
             name="tier"
             defaultValue=""
-            className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
+            className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm text-[var(--yif-charcoal)] focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
           >
             <option value="">Open to discussion</option>
             {YWD_SPONSORSHIP_TIERS.map((t) => (
@@ -62,7 +62,7 @@ export default function SponsorForm() {
           required
           rows={5}
           placeholder="Tell us about your brand, goals, and any specific activations you have in mind."
-          className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
+          className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm text-[var(--yif-charcoal)] placeholder:text-[var(--yif-charcoal)]/40 focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
         />
       </label>
 
@@ -103,7 +103,7 @@ function Field({
         type={type}
         name={name}
         required={required}
-        className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
+        className="mt-2 block w-full rounded-lg border border-black/15 bg-white px-4 py-2.5 text-sm text-[var(--yif-charcoal)] placeholder:text-[var(--yif-charcoal)]/40 focus:border-[var(--yif-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yif-gold)]/30"
       />
     </label>
   );
