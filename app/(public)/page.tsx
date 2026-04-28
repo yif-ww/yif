@@ -6,6 +6,7 @@ import { ProgramsSection } from "@/components/home/ProgramsSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { CtaBanner } from "@/components/home/CtaBanner";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
+import { IconsWall } from "@/components/icons/IconsWall";
 
 export const metadata: Metadata = {
   title: "Yoruba Indigenes' Foundation — Uniting the global Yoruba in diaspora",
@@ -26,6 +27,7 @@ export default function HomePage() {
       <StatsSection />
       <MissionSection />
       <ProgramsSection />
+      <IconsWall />
       <TestimonialsSection />
       <CtaBanner />
       <NewsletterSection />

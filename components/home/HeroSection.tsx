@@ -1,14 +1,21 @@
 import Link from "next/link";
 import { TrustBadge } from "@/components/layout/TrustBadge";
 import { AnkaraBorder } from "@/components/shared/AnkaraBorder";
+import { HeroSlideshow } from "@/components/home/HeroSlideshow";
 
 const SPOKES = [0, 45, 90, 135, 180, 225, 270, 315];
 
 export function HeroSection() {
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-[var(--yif-navy)]">
+      {/* Slideshow of sacred Yoruba places */}
+      <HeroSlideshow />
+
       {/* Adinkra pattern overlay */}
-      <div aria-hidden className="absolute inset-0 pattern-adinkra" />
+      <div
+        aria-hidden
+        className="absolute inset-0 pattern-adinkra opacity-20"
+      />
 
       {/* Decorative concentric circles — right side, hidden on mobile */}
       <div

@@ -2,21 +2,38 @@
 
 import Stripe from "stripe";
 
-const key = process.env.STRIPE_SECRET_KEY;
-
 /**
- * Singleton Stripe client. We don't throw at module load so the rest of the
- * app keeps building when STRIPE_SECRET_KEY is missing — only Stripe code
- * paths fail (they call assertStripeConfigured first).
+ * Lazy singleton Stripe client. The real `Stripe` instance is only constructed
+ * on first property access, so importing this module during `next build` page
+ * data collection (when STRIPE_SECRET_KEY may be absent) does not throw.
+ * Code paths that actually need Stripe should call `assertStripeConfigured()`
+ * first to surface a clear error.
  */
-export const stripe = new Stripe(key ?? "sk_test_placeholder_not_configured", {
-  // Pin to the SDK's bundled API version (avoids drift between SDK + account default).
-  typescript: true,
-  appInfo: {
-    name: "YIF",
-    url: "https://yif.org",
+let _stripe: Stripe | null = null;
+
+function getStripe(): Stripe {
+  if (_stripe) return _stripe;
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    throw new Error(
+      "STRIPE_SECRET_KEY is not set. Configure Stripe in .env to accept non-NGN payments.",
+    );
+  }
+  _stripe = new Stripe(key, {
+    typescript: true,
+    appInfo: {
+      name: "YIF",
+      url: "https://yif.org",
+    },
+  });
+  return _stripe;
+}
+
+export const stripe = new Proxy({} as Stripe, {
+  get(_target, prop, receiver) {
+    return Reflect.get(getStripe() as object, prop, receiver);
   },
-});
+}) as Stripe;
 
 export function assertStripeConfigured(): void {
   if (!process.env.STRIPE_SECRET_KEY) {

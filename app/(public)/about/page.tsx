@@ -4,6 +4,7 @@ import { MissionVisionSection } from "@/components/about/MissionVisionSection";
 import { FoundingStory } from "@/components/about/FoundingStory";
 import { LeadershipSection } from "@/components/about/LeadershipSection";
 import { DiasporaSection } from "@/components/about/DiasporaSection";
+import { IconsTimeline } from "@/components/icons/IconsTimeline";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -22,6 +23,7 @@ export default function AboutPage() {
       <AboutHero />
       <MissionVisionSection />
       <FoundingStory />
+      <IconsTimeline />
       <LeadershipSection />
       <DiasporaSection />
     </>

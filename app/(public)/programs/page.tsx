@@ -6,6 +6,7 @@ import {
   AwardsSection,
   YouthSection,
 } from "@/components/programs/AwardsYouthSections";
+import { ProgramIcons } from "@/components/icons/ProgramIcons";
 
 export const metadata: Metadata = {
   title: "Programs & Initiatives | YIF",
@@ -24,9 +25,13 @@ export default function ProgramsPage() {
     <>
       <ProgramsHero />
       <KaroOjireSection />
+      <ProgramIcons program="economic" />
       <ScholarshipSection />
+      <ProgramIcons program="education" />
       <AwardsSection />
+      <ProgramIcons program="recognition" />
       <YouthSection />
+      <ProgramIcons program="youth" />
     </>
   );
 }

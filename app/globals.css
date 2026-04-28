@@ -118,3 +118,23 @@ h6 {
 .animate-gold-shimmer {
   animation: gold-shimmer 3s ease-in-out infinite;
 }
+
+/* Slow Ken Burns drift for hero slideshow backgrounds */
+@keyframes hero-kenburns {
+  0% {
+    transform: scale(1.08) translate3d(-1.5%, -1%, 0);
+  }
+  100% {
+    transform: scale(1.18) translate3d(1.5%, 1%, 0);
+  }
+}
+
+.animate-hero-kenburns {
+  animation: hero-kenburns 14s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-kenburns {
+    animation: none;
+  }
+}
