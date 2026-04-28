@@ -53,7 +53,9 @@ export function ProgramIcons({
   blurb,
   className,
 }: ProgramIconsProps) {
-  const icons = getIconsByProgram(program);
+  // Cap to a max of three icons per program so the section stays focused
+  // and avoids visual repetition when a figure spans multiple pillars.
+  const icons = getIconsByProgram(program).slice(0, 3);
   if (icons.length === 0) return null;
 
   const copy = DEFAULTS[program];
