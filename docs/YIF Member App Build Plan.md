@@ -268,6 +268,7 @@ Checked on 18 November 2026:
 | 19 Nov 2026 | M0 | Flutter project `yif-mobile` created with app ID `org.yifww.members`. Branch `feat/mobile-api` created in this repo. API contract written in `docs/mobile-api-contract.md` |
 | 19 Nov 2026 | M1 | All 15 screens built on sample data, with loading, empty and error states, all text in one localization file, and unit, screen and screenshot tests |
 | 20 Nov 2026 | M2 | Payment fixes G1 to G5, mobile sign-in, rate limiting, QR signing and the read-only mobile API, on branch `feat/mobile-api`. 23 fast tests and 45 database tests pass, and the project type-checks. **Not yet deployed or committed.** See `docs/M2 Release Checklist.md` |
+| 20 Nov 2026 | M3 | The app signs in with the website account, keeps the token in secure storage, offers fingerprint unlock, and reads Home, Card, Profile, News, Events, Tickets and Payments from the real API, with the card, tickets and payments saved for offline use. Checked against a real local server and database. **Not yet tried on a phone against a deployed server** (M2 must be deployed first) |
 
 **Decisions made during M0 and M1**
 
@@ -306,3 +307,17 @@ Checked on 18 November 2026:
 - **Door check-in access comes from event assignments**, not a new user role.
 - **No per-account sign-in limit yet.** The limit is per address. An attack spread across many addresses against one account is not slowed by it.
 - **Membership numbers continue from the highest one already issued.** Numbers now count up across years, so the number is unique but no longer restarts each January. If a number is ever entered by hand, make sure the sequence still sits above it.
+
+
+**Decisions made during M3**
+
+- **Saved data is plain JSON files, not Drift.** M3 only saves a few small documents (the profile with the card token, payments, tickets, articles). A key-value file cache does that with no code generation or native database, and it keeps builds fast. Drift joins in M6, where check-ins and the guest list need real queries and a write queue.
+- **Fingerprint unlock only opens the saved session.** It is not a separate login and nothing about it reaches the server. If the phone later loses its screen lock, the saved sign-in opens without a prompt rather than locking the member out. Signing out turns it off, so the next sign-in asks again.
+- **Cold start only.** The app asks for the fingerprint when it starts, not each time it returns from the background. A timed re-lock is a product choice for M9.
+- **Offline rules.** Only a missing connection falls back to saved data. If the server answers with an error, the error is shown, so old data never hides a real problem. A saved card token is used only until its own expiry, and a membership whose expiry date has passed shows as expired even offline.
+- **Features whose server routes arrive later** show gracefully in live mode: renewing and buying tickets open the website for now (M4 and M5 replace this), the notification inbox is empty (M7), no sponsor card appears (M8), and door check-in says it is coming soon (M6).
+- **Forgot password** opens the website's reset page, which sends the reset email, so there is one reset flow to maintain.
+- **Delete account** shows a short message in live mode until the server route exists (M9). Apple requires in-app deletion before the App Store release.
+- **Payments marked abandoned or reversed** show as "Failed" in the app. The member did not end up paying, or got the money back.
+- **Pictures are not saved offline.** Event and article pictures load from the web each time. Offline picture saving is M9 polish.
+- **Local demo server.** `scripts/demo-mobile-api.mts` in the website repo serves the real route handlers over a throwaway database with a demo member, so the app and its live tests can run with no deployed server. Demo sign-in: `member@example.com` / `demo-password-123`.
