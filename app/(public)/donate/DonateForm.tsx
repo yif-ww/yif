@@ -36,7 +36,14 @@ const initial: DonateState = {};
 
 type User = { name: string; email: string };
 
-export default function DonateForm({ user }: { user?: User | null }) {
+export default function DonateForm({
+  user,
+  initialCause,
+}: {
+  user?: User | null;
+  /** A cause ID from the link, such as "Scholarship Fund". Unknown values are ignored. */
+  initialCause?: string;
+}) {
   const [state, action, pending] = useActionState(initiateDonation, initial);
   const [frequency, setFrequency] = useState<"one-time" | "recurring">(
     "one-time",
@@ -47,7 +54,9 @@ export default function DonateForm({ user }: { user?: User | null }) {
     currencyConfig.presets[1],
   );
   const [customAmount, setCustomAmount] = useState("");
-  const [cause, setCause] = useState(CAUSES[0].id);
+  const [cause, setCause] = useState(
+    CAUSES.find((c) => c.id === initialCause)?.id ?? CAUSES[0].id,
+  );
 
   function handleCurrencyChange(c: SupportedCurrency) {
     setCurrency(c);

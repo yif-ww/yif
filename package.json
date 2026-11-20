@@ -9,7 +9,10 @@
     "lint": "eslint",
     "email": "email dev --dir emails --port 3001",
     "seed": "tsx prisma/seed.ts",
-    "events:reset": "tsx prisma/scripts/reset-events.ts"
+    "events:reset": "tsx prisma/scripts/reset-events.ts",
+    "qr:keygen": "tsx scripts/generate-qr-key.ts",
+    "test": "node --import tsx --test tests/unit/*.test.ts",
+    "test:integration": "node --import tsx --test --test-concurrency=1 tests/integration/*.test.mts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

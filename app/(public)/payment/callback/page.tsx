@@ -5,13 +5,7 @@ import {
   fromKobo,
   type TransactionVerifyData,
 } from "@/lib/paystack";
-import { recordTransactionVerified } from "@/lib/transactions";
-import {
-  sendTicketConfirmation,
-  sendDonationThankYou,
-  sendMembershipWelcome,
-} from "@/lib/send-email";
-import { prisma } from "@/lib/prisma";
+import { fulfillPaystackPayment } from "@/lib/fulfillment";
 
 export const metadata: Metadata = {
   title: "Payment Status | YIF",
@@ -77,148 +71,27 @@ export default async function PaymentCallbackPage({ searchParams }: Props) {
   const eventTitle = getField("event_title");
   const tierName = getField("tier_name");
   const quantity = getField("quantity");
-  const donationType = getField("donation_type");
-  const cause = getField("cause");
-  const frequency = getField("frequency");
-  const fullName = getField("full_name");
   const paymentType = getField("payment_type");
-  const memberId = getField("member_id");
   const membershipTier = getField("membership_tier");
-  const tierId = getField("tier_id");
-  const toTierId = getField("to_tier_id");
 
   const isMembershipFlow =
     paymentType === "membership" ||
     paymentType === "membership_upgrade" ||
     paymentType === "membership_renewal";
 
-  // Persist the verify result so admins can audit it (fees, channel, raw payload).
-  const purpose = isMembershipFlow
-    ? "MEMBERSHIP"
-    : eventTitle
-      ? "TICKET"
-      : donationType === "donation"
-        ? "DONATION"
-        : "OTHER";
-
-  // Link transaction to a registered user if their email matches.
-  const linkedUser = await prisma.user
-    .findUnique({ where: { email: data.customer.email }, select: { id: true } })
-    .catch(() => null);
-
-  await recordTransactionVerified(data, { purpose, userId: linkedUser?.id ?? null }).catch((err) => {
-    console.error("[callback] tx verify record failed:", err);
-  });
-
-  // Membership activation — run before sending email
+  // Record and fulfil the payment. The webhook normally gets here first; the
+  // two can safely run together (see lib/fulfillment.ts). Emails go out once.
   let membershipNumber = "";
-  if (success && paymentType === "membership" && memberId && tierId) {
-    try {
-      const year = new Date().getFullYear();
-      const count = await prisma.member.count({ where: { status: "ACTIVE" } });
-      membershipNumber = `YIF-${year}-${String(count + 1).padStart(4, "0")}`;
-
-      const expiresAt = new Date();
-      expiresAt.setFullYear(expiresAt.getFullYear() + 1);
-
-      await prisma.member.update({
-        where: { id: memberId },
-        data: {
-          tierId,
-          status: "ACTIVE",
-          expiresAt,
-          membershipNumber,
-          paystackRef: data.reference,
-        },
-      });
-    } catch (err) {
-      console.error("[callback] membership activation failed:", err);
+  try {
+    const outcome = await fulfillPaystackPayment(data);
+    const detail = outcome.summary?.detail;
+    if (detail?.kind === "membership") {
+      membershipNumber = detail.membershipNumber ?? "";
     }
-  }
-
-  // Membership tier change (upgrade or renewal)
-  if (
-    success &&
-    (paymentType === "membership_upgrade" ||
-      paymentType === "membership_renewal") &&
-    memberId &&
-    toTierId
-  ) {
-    try {
-      const expiresAt = new Date();
-      expiresAt.setFullYear(expiresAt.getFullYear() + 1);
-      await prisma.member.update({
-        where: { id: memberId },
-        data: {
-          tierId: toTierId,
-          status: "ACTIVE",
-          expiresAt,
-          pendingTierId: null,
-          paystackRef: data.reference,
-        },
-      });
-    } catch (err) {
-      console.error("[callback] membership tier change failed:", err);
-    }
-  }
-
-  // Send transactional email — failures must not block page render
-  if (success) {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.yifww.org";
-    const customerEmail = data.customer.email;
-    const formattedAmount = `${currency} ${amountPaid.toLocaleString()}`;
-
-    if (eventTitle) {
-      void sendTicketConfirmation({
-        recipientName: fullName || customerEmail,
-        eventTitle,
-        tierName,
-        quantity: Number(quantity) || 1,
-        amountPaid: formattedAmount,
-        eventDate: "",
-        eventTime: "",
-        eventLocation: "",
-        reference: data.reference,
-        recipientEmail: customerEmail,
-        eventsUrl: `${appUrl}/events`,
-      }).catch((err: unknown) => {
-        console.error("[callback] ticket email failed:", err);
-      });
-    } else if (donationType === "donation") {
-      void sendDonationThankYou({
-        recipientName: fullName || customerEmail,
-        cause: cause || "General Fund",
-        amountDonated: formattedAmount,
-        frequency: frequency || "one-time",
-        reference: data.reference,
-        recipientEmail: customerEmail,
-        donateUrl: `${appUrl}/donate`,
-      }).catch((err: unknown) => {
-        console.error("[callback] donation email failed:", err);
-      });
-    } else if (paymentType === "membership" && membershipNumber) {
-      const expiresDate = new Date();
-      expiresDate.setFullYear(expiresDate.getFullYear() + 1);
-      const tierLabel =
-        membershipTier.charAt(0) + membershipTier.slice(1).toLowerCase();
-
-      void sendMembershipWelcome({
-        recipientName: fullName || customerEmail,
-        tierName: tierLabel,
-        membershipNumber,
-        amountPaid: formattedAmount,
-        expiresAt: expiresDate.toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        }),
-        reference: data.reference,
-        recipientEmail: customerEmail,
-        dashboardUrl: `${appUrl}/dashboard`,
-      }).catch((err: unknown) => {
-        console.error("[callback] membership email failed:", err);
-      });
-    }
+  } catch (err) {
+    // The payment itself succeeded. Paystack retries the webhook, which
+    // finishes the job, so this page can still show success.
+    console.error("[callback] fulfilment failed; the webhook will retry:", err);
   }
 
   return (

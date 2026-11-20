@@ -49,6 +49,10 @@ model User {
   scholarshipApplications ScholarshipApplication[]
   transactions            Transaction[]
   invitations             Invitation[]
+  deviceTokens            DeviceToken[]
+  notifications           Notification[]
+  organizerOf             EventOrganizer[]
+  checkInsScanned         CheckIn[]        @relation("CheckInScanner")
 
   @@map("user")
 }
@@ -98,6 +102,18 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+// Better Auth's sign-in rate limiter. Stored in the database so the limit holds
+// across all server instances, not just one.
+model RateLimit {
+  id          String @id
+  key         String
+  count       Int
+  lastRequest BigInt
+
+  @@index([key])
+  @@map("rate_limit")
 }
 
 // ─── App models ─────────────────────────────────────────────────────────────
@@ -183,8 +199,10 @@ model Event {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  tickets Ticket[]
-  tiers   EventTicketTier[]
+  tickets    Ticket[]
+  tiers      EventTicketTier[]
+  organizers EventOrganizer[]
+  checkIns   CheckIn[]
 
   @@map("event")
 }
@@ -197,8 +215,12 @@ model EventTicketTier {
   price       Decimal  @db.Decimal(10, 2)
   description String?
   capacity    Int
+  // Seats from confirmed (paid) tickets. Seats held by checkouts in progress
+  // are not counted here: they are PENDING tickets with an unexpired holdExpiresAt.
   sold        Int      @default(0)
   createdAt   DateTime @default(now())
+
+  tickets Ticket[]
 
   @@map("event_ticket_tier")
 }
@@ -259,19 +281,106 @@ enum TicketStatus {
 
 model Ticket {
   id         String       @id @default(cuid())
-  userId     String
-  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Optional: people can buy tickets without an account. Deleting an account
+  // keeps the ticket (so event counts stay right) but unlinks it.
+  userId     String?
+  user       User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
   eventId    String
   event      Event        @relation(fields: [eventId], references: [id])
+  tierId     String?
+  tier       EventTicketTier? @relation(fields: [tierId], references: [id], onDelete: SetNull)
   tierName   String
   quantity   Int          @default(1)
   status     TicketStatus @default(PENDING)
+  // Our own reference, such as YIF-TK-8F3K2P. For Paystack it is also the
+  // Paystack transaction reference. Stripe tickets link through metadata.
   reference  String       @unique
   amountPaid Decimal?     @db.Decimal(10, 2)
+  holderName  String?
+  holderEmail String?
+  // Guests admitted so far at the door. Never more than quantity.
+  checkedInCount Int      @default(0)
+  // While PENDING, the seats stay held until this time.
+  holdExpiresAt  DateTime?
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
 
+  checkIns CheckIn[]
+
+  @@index([eventId, status])
+  @@index([tierId, status])
+  @@index([userId])
   @@map("ticket")
+}
+
+// ─── Mobile app ─────────────────────────────────────────────────────────────
+
+model DeviceToken {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token      String   @unique
+  platform   String   // ios | android
+  appVersion String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  lastSeenAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("device_token")
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      String    // renewal | ticket | event | news | announcement
+  title     String
+  body      String
+  link      String?   // in-app route, such as /tickets/abc
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, createdAt])
+  @@map("notification")
+}
+
+// Which people may run door check-in for which event.
+model EventOrganizer {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, userId])
+  @@index([userId])
+  @@map("event_organizer")
+}
+
+// One row per scan that admitted guests. The id is generated on the phone, so
+// uploading the same check-in twice never admits anyone twice.
+model CheckIn {
+  id          String   @id
+  ticketId    String
+  ticket      Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id])
+  count       Int
+  gate        String?
+  deviceId    String?
+  scannedById String?
+  scannedBy   User?    @relation("CheckInScanner", fields: [scannedById], references: [id], onDelete: SetNull)
+  // When the phone scanned, which can be well before the upload.
+  scannedAt   DateTime
+  receivedAt  DateTime @default(now())
+  // True when two phones admitted more guests than the ticket allows.
+  isConflict  Boolean  @default(false)
+
+  @@index([ticketId])
+  @@index([eventId])
+  @@map("check_in")
 }
 
 enum DonationStatus {
@@ -385,6 +494,9 @@ model Transaction {
   notes           String?
 
   paidAt          DateTime?
+  // Set once, in the same database transaction that activates the membership or
+  // confirms the ticket, so a repeated webhook or page reload never fulfils twice.
+  fulfilledAt     DateTime?
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
 

@@ -7,10 +7,10 @@ import { prisma } from "@/lib/prisma";
 import { fromStripeMinor } from "@/lib/stripe";
 import { convertToUsd } from "@/lib/fx";
 import {
-  sendTicketConfirmation,
-  sendDonationThankYou,
-  sendMembershipWelcome,
-} from "@/lib/send-email";
+  fulfilTransaction,
+  normalizeStripeMetadata,
+} from "@/lib/fulfillment";
+import { releaseSeatHoldForTransaction } from "@/lib/ticketing";
 import type { Prisma } from "@/generated/prisma/client";
 import type {
   TransactionPurpose,
@@ -30,11 +30,12 @@ function mapPurpose(value: unknown): TransactionPurpose {
 }
 
 /**
- * Persist a Stripe Checkout Session as a Transaction row and run the
- * appropriate fulfillment side-effects (membership activation, emails).
+ * Persist a Stripe Checkout Session as a Transaction row and, if it was paid,
+ * fulfil it (membership activation, ticket confirmation, emails).
  *
- * Idempotent: relies on `Transaction.reference` (= session.id) being unique.
- * If a row already exists in SUCCESS state, side-effects are skipped.
+ * Idempotent: the fulfilment itself is guarded by `Transaction.fulfilledAt`
+ * (see lib/fulfillment.ts), so the webhook and the return page can both call
+ * this at the same time without fulfilling twice.
  */
 export async function fulfillStripeCheckoutSession(
   session: Stripe.Checkout.Session,
@@ -141,155 +142,8 @@ export async function fulfillStripeCheckoutSession(
     },
   });
 
-  // Idempotency guard: only fire side-effects on the first SUCCESS transition.
-  const alreadyFulfilled = existing?.status === "SUCCESS";
-  if (!isPaid || alreadyFulfilled) return;
-
-  await runFulfillmentSideEffects(session, meta, amount, currency);
-}
-
-async function runFulfillmentSideEffects(
-  session: Stripe.Checkout.Session,
-  meta: Stripe.Metadata,
-  amount: number,
-  currency: string,
-): Promise<void> {
-  const purpose = mapPurpose(meta.purpose);
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.yifww.org";
-  const recipientEmail =
-    session.customer_details?.email ??
-    session.customer_email ??
-    (typeof meta.customerEmail === "string" ? meta.customerEmail : "");
-  if (!recipientEmail) return;
-
-  const fullName =
-    session.customer_details?.name ??
-    (typeof meta.customerName === "string" ? meta.customerName : "") ??
-    "";
-  const formattedAmount = `${currency} ${amount.toLocaleString()}`;
-
-  if (purpose === "TICKET") {
-    const eventTitle =
-      typeof meta.eventTitle === "string" ? meta.eventTitle : "YIF Event";
-    const tierName =
-      typeof meta.tierName === "string" ? meta.tierName : "Delegate Pass";
-    const quantity =
-      typeof meta.quantity === "string" ? Number(meta.quantity) || 1 : 1;
-
-    await sendTicketConfirmation({
-      recipientName: fullName || recipientEmail,
-      eventTitle,
-      tierName,
-      quantity,
-      amountPaid: formattedAmount,
-      eventDate: typeof meta.eventDate === "string" ? meta.eventDate : "",
-      eventTime: typeof meta.eventTime === "string" ? meta.eventTime : "",
-      eventLocation:
-        typeof meta.eventLocation === "string" ? meta.eventLocation : "",
-      reference: session.id,
-      recipientEmail,
-      eventsUrl: `${appUrl}/events`,
-    }).catch((err: unknown) => {
-      console.error("[stripe-fulfillment] ticket email failed:", err);
-    });
-    return;
-  }
-
-  if (purpose === "DONATION") {
-    const cause = typeof meta.cause === "string" ? meta.cause : "General Fund";
-    const frequency =
-      typeof meta.frequency === "string" ? meta.frequency : "one-time";
-
-    await sendDonationThankYou({
-      recipientName: fullName || recipientEmail,
-      cause,
-      amountDonated: formattedAmount,
-      frequency,
-      reference: session.id,
-      recipientEmail,
-      donateUrl: `${appUrl}/donate`,
-    }).catch((err: unknown) => {
-      console.error("[stripe-fulfillment] donation email failed:", err);
-    });
-    return;
-  }
-
-  if (purpose === "MEMBERSHIP") {
-    const memberId = typeof meta.memberId === "string" ? meta.memberId : "";
-    const paymentType =
-      typeof meta.paymentType === "string" ? meta.paymentType : "membership";
-    const membershipTier =
-      typeof meta.membershipTier === "string" ? meta.membershipTier : "";
-    // tierId is the DB id of the target tier (set in all new checkout metadata)
-    const tierId = typeof meta.tierId === "string" ? meta.tierId : "";
-    const toTierId = typeof meta.toTierId === "string" ? meta.toTierId : tierId;
-
-    let membershipNumber = "";
-    try {
-      if (paymentType === "membership" && memberId && tierId) {
-        const year = new Date().getFullYear();
-        const count = await prisma.member.count({
-          where: { status: "ACTIVE" },
-        });
-        membershipNumber = `YIF-${year}-${String(count + 1).padStart(4, "0")}`;
-        const expiresAt = new Date();
-        expiresAt.setFullYear(expiresAt.getFullYear() + 1);
-        await prisma.member.update({
-          where: { id: memberId },
-          data: {
-            tierId,
-            status: "ACTIVE",
-            expiresAt,
-            membershipNumber,
-            paystackRef: session.id,
-          },
-        });
-      } else if (
-        (paymentType === "membership_upgrade" ||
-          paymentType === "membership_renewal") &&
-        memberId &&
-        toTierId
-      ) {
-        const expiresAt = new Date();
-        expiresAt.setFullYear(expiresAt.getFullYear() + 1);
-        await prisma.member.update({
-          where: { id: memberId },
-          data: {
-            tierId: toTierId,
-            status: "ACTIVE",
-            expiresAt,
-            pendingTierId: null,
-            paystackRef: session.id,
-          },
-        });
-      }
-    } catch (err) {
-      console.error("[stripe-fulfillment] membership update failed:", err);
-    }
-
-    if (paymentType === "membership" && membershipNumber) {
-      const expiresDate = new Date();
-      expiresDate.setFullYear(expiresDate.getFullYear() + 1);
-      const tierLabel =
-        membershipTier.charAt(0) + membershipTier.slice(1).toLowerCase();
-      await sendMembershipWelcome({
-        recipientName: fullName || recipientEmail,
-        tierName: tierLabel,
-        membershipNumber,
-        amountPaid: formattedAmount,
-        expiresAt: expiresDate.toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        }),
-        reference: session.id,
-        recipientEmail,
-        dashboardUrl: `${appUrl}/dashboard`,
-      }).catch((err: unknown) => {
-        console.error("[stripe-fulfillment] membership email failed:", err);
-      });
-    }
-  }
+  if (!isPaid) return;
+  await fulfilTransaction(session.id, normalizeStripeMetadata(session.metadata));
 }
 
 /** Mark a transaction FAILED (e.g. on payment_intent.payment_failed). */
@@ -308,4 +162,7 @@ export async function markStripeTransactionFailed(
     .catch(() => {
       // row may not exist (e.g. webhook arrived before init) — ignore
     });
+  await releaseSeatHoldForTransaction(reference).catch((err) =>
+    console.error("[stripe-fulfillment] could not release seat hold:", err),
+  );
 }

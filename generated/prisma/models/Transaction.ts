@@ -71,6 +71,7 @@ export type TransactionMinAggregateOutputType = {
   donationId: string | null
   notes: string | null
   paidAt: Date | null
+  fulfilledAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -104,6 +105,7 @@ export type TransactionMaxAggregateOutputType = {
   donationId: string | null
   notes: string | null
   paidAt: Date | null
+  fulfilledAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -139,6 +141,7 @@ export type TransactionCountAggregateOutputType = {
   rawResponse: number
   notes: number
   paidAt: number
+  fulfilledAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -190,6 +193,7 @@ export type TransactionMinAggregateInputType = {
   donationId?: true
   notes?: true
   paidAt?: true
+  fulfilledAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -223,6 +227,7 @@ export type TransactionMaxAggregateInputType = {
   donationId?: true
   notes?: true
   paidAt?: true
+  fulfilledAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -258,6 +263,7 @@ export type TransactionCountAggregateInputType = {
   rawResponse?: true
   notes?: true
   paidAt?: true
+  fulfilledAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -380,6 +386,7 @@ export type TransactionGroupByOutputType = {
   rawResponse: runtime.JsonValue | null
   notes: string | null
   paidAt: Date | null
+  fulfilledAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: TransactionCountAggregateOutputType | null
@@ -438,6 +445,7 @@ export type TransactionWhereInput = {
   rawResponse?: Prisma.JsonNullableFilter<"Transaction">
   notes?: Prisma.StringNullableFilter<"Transaction"> | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
+  fulfilledAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
@@ -474,6 +482,7 @@ export type TransactionOrderByWithRelationInput = {
   rawResponse?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  fulfilledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -513,6 +522,7 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   rawResponse?: Prisma.JsonNullableFilter<"Transaction">
   notes?: Prisma.StringNullableFilter<"Transaction"> | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
+  fulfilledAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
@@ -549,6 +559,7 @@ export type TransactionOrderByWithAggregationInput = {
   rawResponse?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  fulfilledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TransactionCountOrderByAggregateInput
@@ -592,6 +603,7 @@ export type TransactionScalarWhereWithAggregatesInput = {
   rawResponse?: Prisma.JsonNullableWithAggregatesFilter<"Transaction">
   notes?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   paidAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Transaction"> | Date | string | null
+  fulfilledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Transaction"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
 }
@@ -626,6 +638,7 @@ export type TransactionCreateInput = {
   rawResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   notes?: string | null
   paidAt?: Date | string | null
+  fulfilledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutTransactionsInput
@@ -662,6 +675,7 @@ export type TransactionUncheckedCreateInput = {
   rawResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   notes?: string | null
   paidAt?: Date | string | null
+  fulfilledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -696,6 +710,7 @@ export type TransactionUpdateInput = {
   rawResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  fulfilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutTransactionsNestedInput
@@ -732,6 +747,7 @@ export type TransactionUncheckedUpdateInput = {
   rawResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  fulfilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -767,6 +783,7 @@ export type TransactionCreateManyInput = {
   rawResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   notes?: string | null
   paidAt?: Date | string | null
+  fulfilledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -801,6 +818,7 @@ export type TransactionUpdateManyMutationInput = {
   rawResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  fulfilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -836,6 +854,7 @@ export type TransactionUncheckedUpdateManyInput = {
   rawResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  fulfilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -881,6 +900,7 @@ export type TransactionCountOrderByAggregateInput = {
   rawResponse?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  fulfilledAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -922,6 +942,7 @@ export type TransactionMaxOrderByAggregateInput = {
   donationId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  fulfilledAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -955,6 +976,7 @@ export type TransactionMinOrderByAggregateInput = {
   donationId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  fulfilledAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -1047,6 +1069,7 @@ export type TransactionCreateWithoutUserInput = {
   rawResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   notes?: string | null
   paidAt?: Date | string | null
+  fulfilledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1081,6 +1104,7 @@ export type TransactionUncheckedCreateWithoutUserInput = {
   rawResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   notes?: string | null
   paidAt?: Date | string | null
+  fulfilledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1145,6 +1169,7 @@ export type TransactionScalarWhereInput = {
   rawResponse?: Prisma.JsonNullableFilter<"Transaction">
   notes?: Prisma.StringNullableFilter<"Transaction"> | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
+  fulfilledAt?: Prisma.DateTimeNullableFilter<"Transaction"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
 }
@@ -1179,6 +1204,7 @@ export type TransactionCreateManyUserInput = {
   rawResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   notes?: string | null
   paidAt?: Date | string | null
+  fulfilledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1213,6 +1239,7 @@ export type TransactionUpdateWithoutUserInput = {
   rawResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  fulfilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1247,6 +1274,7 @@ export type TransactionUncheckedUpdateWithoutUserInput = {
   rawResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  fulfilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1281,6 +1309,7 @@ export type TransactionUncheckedUpdateManyWithoutUserInput = {
   rawResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  fulfilledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1318,6 +1347,7 @@ export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   rawResponse?: boolean
   notes?: boolean
   paidAt?: boolean
+  fulfilledAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.Transaction$userArgs<ExtArgs>
@@ -1354,6 +1384,7 @@ export type TransactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   rawResponse?: boolean
   notes?: boolean
   paidAt?: boolean
+  fulfilledAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.Transaction$userArgs<ExtArgs>
@@ -1390,6 +1421,7 @@ export type TransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   rawResponse?: boolean
   notes?: boolean
   paidAt?: boolean
+  fulfilledAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.Transaction$userArgs<ExtArgs>
@@ -1426,11 +1458,12 @@ export type TransactionSelectScalar = {
   rawResponse?: boolean
   notes?: boolean
   paidAt?: boolean
+  fulfilledAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "provider" | "reference" | "providerTxId" | "purpose" | "status" | "amount" | "fees" | "netAmount" | "currency" | "baseAmount" | "baseCurrency" | "fxRate" | "channel" | "cardBrand" | "cardLast4" | "cardBank" | "gatewayResponse" | "ipAddress" | "customerEmail" | "customerName" | "customerPhone" | "userId" | "memberId" | "ticketId" | "donationId" | "metadata" | "rawResponse" | "notes" | "paidAt" | "createdAt" | "updatedAt", ExtArgs["result"]["transaction"]>
+export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "provider" | "reference" | "providerTxId" | "purpose" | "status" | "amount" | "fees" | "netAmount" | "currency" | "baseAmount" | "baseCurrency" | "fxRate" | "channel" | "cardBrand" | "cardLast4" | "cardBank" | "gatewayResponse" | "ipAddress" | "customerEmail" | "customerName" | "customerPhone" | "userId" | "memberId" | "ticketId" | "donationId" | "metadata" | "rawResponse" | "notes" | "paidAt" | "fulfilledAt" | "createdAt" | "updatedAt", ExtArgs["result"]["transaction"]>
 export type TransactionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Transaction$userArgs<ExtArgs>
 }
@@ -1477,6 +1510,7 @@ export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     rawResponse: runtime.JsonValue | null
     notes: string | null
     paidAt: Date | null
+    fulfilledAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["transaction"]>
@@ -1933,6 +1967,7 @@ export interface TransactionFieldRefs {
   readonly rawResponse: Prisma.FieldRef<"Transaction", 'Json'>
   readonly notes: Prisma.FieldRef<"Transaction", 'String'>
   readonly paidAt: Prisma.FieldRef<"Transaction", 'DateTime'>
+  readonly fulfilledAt: Prisma.FieldRef<"Transaction", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Transaction", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Transaction", 'DateTime'>
 }

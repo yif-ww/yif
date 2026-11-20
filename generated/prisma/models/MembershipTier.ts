@@ -490,14 +490,6 @@ export type MembershipTierNullableScalarRelationFilter = {
   isNot?: Prisma.MembershipTierWhereInput | null
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type MembershipTierCreateNestedOneWithoutPricesInput = {
   create?: Prisma.XOR<Prisma.MembershipTierCreateWithoutPricesInput, Prisma.MembershipTierUncheckedCreateWithoutPricesInput>
   connectOrCreate?: Prisma.MembershipTierCreateOrConnectWithoutPricesInput

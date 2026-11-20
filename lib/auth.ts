@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { admin } from "better-auth/plugins";
+import { admin, bearer } from "better-auth/plugins";
 import { prisma } from "./prisma";
 import { sendPasswordReset } from "./send-email";
 
@@ -50,5 +50,23 @@ export const auth = betterAuth({
     resetPasswordTokenExpiresIn: 60 * 60, // 1 hour
   },
   trustedOrigins,
-  plugins: [admin()],
+  // `bearer` lets the mobile app sign in with the same account and then send
+  // the session as an `Authorization: Bearer` header. Sign-in responses carry
+  // the token in a `set-auth-token` header. Web sessions still use cookies.
+  plugins: [admin(), bearer()],
+  // Throttle guessing of passwords. Stored in the database so the limit holds
+  // across every server instance. Better Auth identifies callers by the
+  // x-forwarded-for header, which the hosting platform sets.
+  rateLimit: {
+    enabled: true,
+    storage: "database",
+    window: 60,
+    max: 120,
+    customRules: {
+      "/sign-in/email": { window: 60, max: 5 },
+      "/sign-up/email": { window: 60, max: 5 },
+      "/request-password-reset": { window: 300, max: 3 },
+      "/reset-password": { window: 300, max: 5 },
+    },
+  },
 });

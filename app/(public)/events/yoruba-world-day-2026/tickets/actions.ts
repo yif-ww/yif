@@ -11,6 +11,15 @@ import { prisma } from "@/lib/prisma";
 import { YWD_SLUG, YWD_EVENT } from "@/lib/yoruba-world-day-2026";
 import { stripe, assertStripeConfigured, toStripeMinor } from "@/lib/stripe";
 import { usdToNgn } from "@/lib/currency";
+import {
+  InvalidQuantityError,
+  releaseSeatHold,
+  reserveSeats,
+  SoldOutError,
+  type SeatHold,
+} from "@/lib/ticketing";
+
+const MAX_DELEGATE_PASSES = 20;
 
 export type TicketCheckoutState = { error?: string };
 
@@ -53,6 +62,25 @@ export async function buyDelegatePass(
   const totalNaira = Number(tier.price) * qty;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.yifww.org";
 
+  // Hold the passes before taking payment, so the event can't be oversold.
+  let hold: SeatHold;
+  try {
+    hold = await reserveSeats({
+      eventId: event.id,
+      tierId: tier.id,
+      tierName: tier.name,
+      quantity: qty,
+      holderName: name,
+      holderEmail: email,
+      maxPerOrder: MAX_DELEGATE_PASSES,
+    });
+  } catch (err) {
+    if (err instanceof SoldOutError || err instanceof InvalidQuantityError) {
+      return { error: err.message };
+    }
+    throw err;
+  }
+
   // ── USD via Stripe ──────────────────────────────────────────────────────
   if (currency !== "NGN") {
     try {
@@ -88,6 +116,7 @@ export async function buyDelegatePass(
         cancel_url: `${appUrl}/events/${YWD_SLUG}/tickets`,
         metadata: {
           purpose: "TICKET",
+          ticketRef: hold.reference,
           eventSlug: YWD_SLUG,
           eventTitle: YWD_EVENT.title,
           tierId: tier.id,
@@ -117,6 +146,7 @@ export async function buyDelegatePass(
           tierId: tier.id,
           tierName: tier.name,
           quantity: qty,
+          ticketRef: hold.reference,
           country,
           totalUsd,
         },
@@ -125,6 +155,7 @@ export async function buyDelegatePass(
       stripeUrl = session.url;
     } catch (err) {
       console.error("[buyDelegatePass] Stripe init failed:", err);
+      await releaseSeatHold(hold.reference).catch(() => undefined);
       return {
         error:
           "We couldn't start the Stripe checkout. Please try again, or contact us if the problem persists.",
@@ -132,6 +163,7 @@ export async function buyDelegatePass(
     }
 
     if (!stripeUrl) {
+      await releaseSeatHold(hold.reference).catch(() => undefined);
       return { error: "Stripe did not return a checkout URL. Please retry." };
     }
     redirect(stripeUrl);
@@ -147,8 +179,11 @@ export async function buyDelegatePass(
         body: JSON.stringify({
           email,
           amount: toKobo(totalNaira).toString(),
+          // Our own reference, so the ticket and the payment share one.
+          reference: hold.reference,
           callback_url: `${appUrl}/payment/callback`,
           metadata: {
+            ticketRef: hold.reference,
             cancel_action: `${appUrl}/events/${YWD_SLUG}/tickets`,
             custom_fields: [
               {
@@ -193,6 +228,7 @@ export async function buyDelegatePass(
         tierId: tier.id,
         tierName: tier.name,
         quantity: qty,
+        ticketRef: hold.reference,
         country,
       },
     });
@@ -200,6 +236,7 @@ export async function buyDelegatePass(
     authorizationUrl = result.data.authorization_url;
   } catch (err) {
     console.error("[buyDelegatePass] Paystack init failed:", err);
+    await releaseSeatHold(hold.reference).catch(() => undefined);
     return {
       error:
         "We couldn't start the payment. Please try again, or contact us if the problem persists.",

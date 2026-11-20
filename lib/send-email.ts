@@ -11,6 +11,9 @@ import MembershipWelcomeEmail, {
 import MembershipInitializationEmail, {
   type MembershipInitializationEmailProps,
 } from "@/emails/MembershipInitializationEmail";
+import MembershipRenewedEmail, {
+  type MembershipRenewedEmailProps,
+} from "@/emails/MembershipRenewedEmail";
 import PasswordResetEmail, {
   type PasswordResetEmailProps,
 } from "@/emails/PasswordResetEmail";
@@ -94,6 +97,36 @@ export async function sendMembershipWelcome(
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[sendMembershipWelcome] Unexpected error:", message);
+    return { success: false, error: message };
+  }
+}
+
+export type MembershipRenewedEmailData = Omit<MembershipRenewedEmailProps, never>;
+
+/** Receipt for a renewal or an upgrade. First-time members get the welcome email instead. */
+export async function sendMembershipRenewal(
+  data: MembershipRenewedEmailData,
+): Promise<EmailResult> {
+  try {
+    const { error } = await resend.emails.send({
+      from: `YIF <${FROM_EMAIL}>`,
+      to: [data.recipientEmail],
+      subject:
+        data.change === "upgraded"
+          ? `Your YIF membership is upgraded to ${data.tierName}`
+          : `Your YIF ${data.tierName} membership is renewed`,
+      react: createElement(MembershipRenewedEmail, data),
+    });
+
+    if (error) {
+      console.error("[sendMembershipRenewal] Resend error:", error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[sendMembershipRenewal] Unexpected error:", message);
     return { success: false, error: message };
   }
 }

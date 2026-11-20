@@ -38,6 +38,11 @@ export type Account = Prisma.AccountModel
  */
 export type Verification = Prisma.VerificationModel
 /**
+ * Model RateLimit
+ * 
+ */
+export type RateLimit = Prisma.RateLimitModel
+/**
  * Model MembershipTier
  * 
  */
@@ -82,6 +87,26 @@ export type Invitation = Prisma.InvitationModel
  * 
  */
 export type Ticket = Prisma.TicketModel
+/**
+ * Model DeviceToken
+ * 
+ */
+export type DeviceToken = Prisma.DeviceTokenModel
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel
+/**
+ * Model EventOrganizer
+ * 
+ */
+export type EventOrganizer = Prisma.EventOrganizerModel
+/**
+ * Model CheckIn
+ * 
+ */
+export type CheckIn = Prisma.CheckInModel
 /**
  * Model Donation
  * 

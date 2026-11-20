@@ -7,6 +7,13 @@ import {
 } from "@/lib/paystack";
 import { recordTransactionInit } from "@/lib/transactions";
 import { prisma } from "@/lib/prisma";
+import {
+  InvalidQuantityError,
+  releaseSeatHold,
+  reserveSeats,
+  SoldOutError,
+  type SeatHold,
+} from "@/lib/ticketing";
 
 export type CheckoutState = {
   error?: string;
@@ -44,6 +51,24 @@ export async function checkoutTickets(
   const totalNaira = Number(tier.price) * qty;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.yifww.org";
 
+  // Hold the seats before taking payment, so the last ticket can't be sold twice.
+  let hold: SeatHold;
+  try {
+    hold = await reserveSeats({
+      eventId: event.id,
+      tierId: tier.id,
+      tierName: tier.name,
+      quantity: qty,
+      holderName: name,
+      holderEmail: email,
+    });
+  } catch (err) {
+    if (err instanceof SoldOutError || err instanceof InvalidQuantityError) {
+      return { error: err.message };
+    }
+    throw err;
+  }
+
   try {
     const result = await paystackRequest<TransactionInitData>(
       "/transaction/initialize",
@@ -52,8 +77,11 @@ export async function checkoutTickets(
         body: JSON.stringify({
           email,
           amount: toKobo(totalNaira).toString(),
+          // Our own reference, so the ticket and the payment share one.
+          reference: hold.reference,
           callback_url: `${appUrl}/payment/callback`,
           metadata: {
+            ticketRef: hold.reference,
             cancel_action: `${appUrl}/events/${slug}`,
             custom_fields: [
               {
@@ -95,6 +123,7 @@ export async function checkoutTickets(
         tierId: tier.id,
         tierName: tier.name,
         quantity: qty,
+        ticketRef: hold.reference,
       },
     }).catch((err) =>
       console.error("[checkoutTickets] tx init record failed:", err),
@@ -113,6 +142,8 @@ export async function checkoutTickets(
     ) {
       throw err;
     }
+    // Payment never started, so give the seats back.
+    await releaseSeatHold(hold.reference).catch(() => undefined);
     const msg =
       err instanceof Error
         ? err.message

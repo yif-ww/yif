@@ -55,6 +55,7 @@ export const ModelName = {
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
+  RateLimit: 'RateLimit',
   MembershipTier: 'MembershipTier',
   MembershipPlanPrice: 'MembershipPlanPrice',
   Member: 'Member',
@@ -64,6 +65,10 @@ export const ModelName = {
   BlogPost: 'BlogPost',
   Invitation: 'Invitation',
   Ticket: 'Ticket',
+  DeviceToken: 'DeviceToken',
+  Notification: 'Notification',
+  EventOrganizer: 'EventOrganizer',
+  CheckIn: 'CheckIn',
   Donation: 'Donation',
   ScholarshipApplication: 'ScholarshipApplication',
   Transaction: 'Transaction'
@@ -158,6 +163,16 @@ export const VerificationScalarFieldEnum = {
 } as const
 
 export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum]
+
+
+export const RateLimitScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  count: 'count',
+  lastRequest: 'lastRequest'
+} as const
+
+export type RateLimitScalarFieldEnum = (typeof RateLimitScalarFieldEnum)[keyof typeof RateLimitScalarFieldEnum]
 
 
 export const MembershipTierScalarFieldEnum = {
@@ -292,16 +307,75 @@ export const TicketScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   eventId: 'eventId',
+  tierId: 'tierId',
   tierName: 'tierName',
   quantity: 'quantity',
   status: 'status',
   reference: 'reference',
   amountPaid: 'amountPaid',
+  holderName: 'holderName',
+  holderEmail: 'holderEmail',
+  checkedInCount: 'checkedInCount',
+  holdExpiresAt: 'holdExpiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type TicketScalarFieldEnum = (typeof TicketScalarFieldEnum)[keyof typeof TicketScalarFieldEnum]
+
+
+export const DeviceTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  platform: 'platform',
+  appVersion: 'appVersion',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  lastSeenAt: 'lastSeenAt'
+} as const
+
+export type DeviceTokenScalarFieldEnum = (typeof DeviceTokenScalarFieldEnum)[keyof typeof DeviceTokenScalarFieldEnum]
+
+
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  kind: 'kind',
+  title: 'title',
+  body: 'body',
+  link: 'link',
+  readAt: 'readAt',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
+export const EventOrganizerScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  userId: 'userId',
+  createdAt: 'createdAt'
+} as const
+
+export type EventOrganizerScalarFieldEnum = (typeof EventOrganizerScalarFieldEnum)[keyof typeof EventOrganizerScalarFieldEnum]
+
+
+export const CheckInScalarFieldEnum = {
+  id: 'id',
+  ticketId: 'ticketId',
+  eventId: 'eventId',
+  count: 'count',
+  gate: 'gate',
+  deviceId: 'deviceId',
+  scannedById: 'scannedById',
+  scannedAt: 'scannedAt',
+  receivedAt: 'receivedAt',
+  isConflict: 'isConflict'
+} as const
+
+export type CheckInScalarFieldEnum = (typeof CheckInScalarFieldEnum)[keyof typeof CheckInScalarFieldEnum]
 
 
 export const DonationScalarFieldEnum = {
@@ -363,6 +437,7 @@ export const TransactionScalarFieldEnum = {
   rawResponse: 'rawResponse',
   notes: 'notes',
   paidAt: 'paidAt',
+  fulfilledAt: 'fulfilledAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

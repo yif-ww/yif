@@ -334,6 +334,10 @@ export type UserWhereInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationListRelationFilter
   transactions?: Prisma.TransactionListRelationFilter
   invitations?: Prisma.InvitationListRelationFilter
+  deviceTokens?: Prisma.DeviceTokenListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
+  organizerOf?: Prisma.EventOrganizerListRelationFilter
+  checkInsScanned?: Prisma.CheckInListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -368,6 +372,10 @@ export type UserOrderByWithRelationInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationOrderByRelationAggregateInput
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
   invitations?: Prisma.InvitationOrderByRelationAggregateInput
+  deviceTokens?: Prisma.DeviceTokenOrderByRelationAggregateInput
+  notifications?: Prisma.NotificationOrderByRelationAggregateInput
+  organizerOf?: Prisma.EventOrganizerOrderByRelationAggregateInput
+  checkInsScanned?: Prisma.CheckInOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -405,6 +413,10 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   scholarshipApplications?: Prisma.ScholarshipApplicationListRelationFilter
   transactions?: Prisma.TransactionListRelationFilter
   invitations?: Prisma.InvitationListRelationFilter
+  deviceTokens?: Prisma.DeviceTokenListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
+  organizerOf?: Prisma.EventOrganizerListRelationFilter
+  checkInsScanned?: Prisma.CheckInListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -497,6 +509,10 @@ export type UserCreateInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInCreateNestedManyWithoutScannedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -531,6 +547,10 @@ export type UserUncheckedCreateInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerUncheckedCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInUncheckedCreateNestedManyWithoutScannedByInput
 }
 
 export type UserUpdateInput = {
@@ -565,6 +585,10 @@ export type UserUpdateInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -599,6 +623,10 @@ export type UserUncheckedUpdateInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUncheckedUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUncheckedUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -855,12 +883,72 @@ export type UserCreateNestedOneWithoutTicketsInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutTicketsNestedInput = {
+export type UserUpdateOneWithoutTicketsNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutTicketsInput, Prisma.UserUncheckedCreateWithoutTicketsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutTicketsInput
   upsert?: Prisma.UserUpsertWithoutTicketsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTicketsInput, Prisma.UserUpdateWithoutTicketsInput>, Prisma.UserUncheckedUpdateWithoutTicketsInput>
+}
+
+export type UserCreateNestedOneWithoutDeviceTokensInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDeviceTokensInput, Prisma.UserUncheckedCreateWithoutDeviceTokensInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDeviceTokensInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutDeviceTokensNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDeviceTokensInput, Prisma.UserUncheckedCreateWithoutDeviceTokensInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDeviceTokensInput
+  upsert?: Prisma.UserUpsertWithoutDeviceTokensInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDeviceTokensInput, Prisma.UserUpdateWithoutDeviceTokensInput>, Prisma.UserUncheckedUpdateWithoutDeviceTokensInput>
+}
+
+export type UserCreateNestedOneWithoutNotificationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsInput
+  upsert?: Prisma.UserUpsertWithoutNotificationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationsInput, Prisma.UserUpdateWithoutNotificationsInput>, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
+}
+
+export type UserCreateNestedOneWithoutOrganizerOfInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOrganizerOfInput, Prisma.UserUncheckedCreateWithoutOrganizerOfInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOrganizerOfInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutOrganizerOfNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOrganizerOfInput, Prisma.UserUncheckedCreateWithoutOrganizerOfInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOrganizerOfInput
+  upsert?: Prisma.UserUpsertWithoutOrganizerOfInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutOrganizerOfInput, Prisma.UserUpdateWithoutOrganizerOfInput>, Prisma.UserUncheckedUpdateWithoutOrganizerOfInput>
+}
+
+export type UserCreateNestedOneWithoutCheckInsScannedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCheckInsScannedInput, Prisma.UserUncheckedCreateWithoutCheckInsScannedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCheckInsScannedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutCheckInsScannedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCheckInsScannedInput, Prisma.UserUncheckedCreateWithoutCheckInsScannedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCheckInsScannedInput
+  upsert?: Prisma.UserUpsertWithoutCheckInsScannedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCheckInsScannedInput, Prisma.UserUpdateWithoutCheckInsScannedInput>, Prisma.UserUncheckedUpdateWithoutCheckInsScannedInput>
 }
 
 export type UserCreateNestedOneWithoutDonationsInput = {
@@ -938,6 +1026,10 @@ export type UserCreateWithoutSessionsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInCreateNestedManyWithoutScannedByInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -971,6 +1063,10 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerUncheckedCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInUncheckedCreateNestedManyWithoutScannedByInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1020,6 +1116,10 @@ export type UserUpdateWithoutSessionsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1053,6 +1153,10 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUncheckedUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUncheckedUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -1086,6 +1190,10 @@ export type UserCreateWithoutAccountsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInCreateNestedManyWithoutScannedByInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1119,6 +1227,10 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerUncheckedCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInUncheckedCreateNestedManyWithoutScannedByInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1168,6 +1280,10 @@ export type UserUpdateWithoutAccountsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1201,6 +1317,10 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUncheckedUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUncheckedUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserCreateWithoutMemberInput = {
@@ -1234,6 +1354,10 @@ export type UserCreateWithoutMemberInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInCreateNestedManyWithoutScannedByInput
 }
 
 export type UserUncheckedCreateWithoutMemberInput = {
@@ -1267,6 +1391,10 @@ export type UserUncheckedCreateWithoutMemberInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerUncheckedCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInUncheckedCreateNestedManyWithoutScannedByInput
 }
 
 export type UserCreateOrConnectWithoutMemberInput = {
@@ -1316,6 +1444,10 @@ export type UserUpdateWithoutMemberInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMemberInput = {
@@ -1349,6 +1481,10 @@ export type UserUncheckedUpdateWithoutMemberInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUncheckedUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUncheckedUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserCreateWithoutInvitationsInput = {
@@ -1382,6 +1518,10 @@ export type UserCreateWithoutInvitationsInput = {
   donations?: Prisma.DonationCreateNestedManyWithoutUserInput
   scholarshipApplications?: Prisma.ScholarshipApplicationCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  deviceTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInCreateNestedManyWithoutScannedByInput
 }
 
 export type UserUncheckedCreateWithoutInvitationsInput = {
@@ -1415,6 +1555,10 @@ export type UserUncheckedCreateWithoutInvitationsInput = {
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutUserInput
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerUncheckedCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInUncheckedCreateNestedManyWithoutScannedByInput
 }
 
 export type UserCreateOrConnectWithoutInvitationsInput = {
@@ -1464,6 +1608,10 @@ export type UserUpdateWithoutInvitationsInput = {
   donations?: Prisma.DonationUpdateManyWithoutUserNestedInput
   scholarshipApplications?: Prisma.ScholarshipApplicationUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  deviceTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitationsInput = {
@@ -1497,6 +1645,10 @@ export type UserUncheckedUpdateWithoutInvitationsInput = {
   donations?: Prisma.DonationUncheckedUpdateManyWithoutUserNestedInput
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUncheckedUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUncheckedUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserCreateWithoutTicketsInput = {
@@ -1530,6 +1682,10 @@ export type UserCreateWithoutTicketsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInCreateNestedManyWithoutScannedByInput
 }
 
 export type UserUncheckedCreateWithoutTicketsInput = {
@@ -1563,6 +1719,10 @@ export type UserUncheckedCreateWithoutTicketsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerUncheckedCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInUncheckedCreateNestedManyWithoutScannedByInput
 }
 
 export type UserCreateOrConnectWithoutTicketsInput = {
@@ -1612,6 +1772,10 @@ export type UserUpdateWithoutTicketsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTicketsInput = {
@@ -1645,6 +1809,666 @@ export type UserUncheckedUpdateWithoutTicketsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUncheckedUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUncheckedUpdateManyWithoutScannedByNestedInput
+}
+
+export type UserCreateWithoutDeviceTokensInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  role?: string
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  phone?: string | null
+  gender?: string | null
+  continent?: string | null
+  country?: string | null
+  stateProvince?: string | null
+  cityDistrict?: string | null
+  bio?: string | null
+  notifEventInvites?: boolean
+  notifNewsletter?: boolean
+  notifDonationReceipts?: boolean
+  notifMemberUpdates?: boolean
+  notifScholarshipNews?: boolean
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  member?: Prisma.MemberCreateNestedOneWithoutUserInput
+  tickets?: Prisma.TicketCreateNestedManyWithoutUserInput
+  donations?: Prisma.DonationCreateNestedManyWithoutUserInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationCreateNestedManyWithoutUserInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInCreateNestedManyWithoutScannedByInput
+}
+
+export type UserUncheckedCreateWithoutDeviceTokensInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  role?: string
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  phone?: string | null
+  gender?: string | null
+  continent?: string | null
+  country?: string | null
+  stateProvince?: string | null
+  cityDistrict?: string | null
+  bio?: string | null
+  notifEventInvites?: boolean
+  notifNewsletter?: boolean
+  notifDonationReceipts?: boolean
+  notifMemberUpdates?: boolean
+  notifScholarshipNews?: boolean
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  member?: Prisma.MemberUncheckedCreateNestedOneWithoutUserInput
+  tickets?: Prisma.TicketUncheckedCreateNestedManyWithoutUserInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutUserInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedCreateNestedManyWithoutUserInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerUncheckedCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInUncheckedCreateNestedManyWithoutScannedByInput
+}
+
+export type UserCreateOrConnectWithoutDeviceTokensInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDeviceTokensInput, Prisma.UserUncheckedCreateWithoutDeviceTokensInput>
+}
+
+export type UserUpsertWithoutDeviceTokensInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDeviceTokensInput, Prisma.UserUncheckedUpdateWithoutDeviceTokensInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDeviceTokensInput, Prisma.UserUncheckedCreateWithoutDeviceTokensInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDeviceTokensInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDeviceTokensInput, Prisma.UserUncheckedUpdateWithoutDeviceTokensInput>
+}
+
+export type UserUpdateWithoutDeviceTokensInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  continent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cityDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifEventInvites?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifNewsletter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifDonationReceipts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMemberUpdates?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifScholarshipNews?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  member?: Prisma.MemberUpdateOneWithoutUserNestedInput
+  tickets?: Prisma.TicketUpdateManyWithoutUserNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutUserNestedInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationUpdateManyWithoutUserNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUpdateManyWithoutScannedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDeviceTokensInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  continent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cityDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifEventInvites?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifNewsletter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifDonationReceipts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMemberUpdates?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifScholarshipNews?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  member?: Prisma.MemberUncheckedUpdateOneWithoutUserNestedInput
+  tickets?: Prisma.TicketUncheckedUpdateManyWithoutUserNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutUserNestedInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedUpdateManyWithoutUserNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUncheckedUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUncheckedUpdateManyWithoutScannedByNestedInput
+}
+
+export type UserCreateWithoutNotificationsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  role?: string
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  phone?: string | null
+  gender?: string | null
+  continent?: string | null
+  country?: string | null
+  stateProvince?: string | null
+  cityDistrict?: string | null
+  bio?: string | null
+  notifEventInvites?: boolean
+  notifNewsletter?: boolean
+  notifDonationReceipts?: boolean
+  notifMemberUpdates?: boolean
+  notifScholarshipNews?: boolean
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  member?: Prisma.MemberCreateNestedOneWithoutUserInput
+  tickets?: Prisma.TicketCreateNestedManyWithoutUserInput
+  donations?: Prisma.DonationCreateNestedManyWithoutUserInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationCreateNestedManyWithoutUserInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInCreateNestedManyWithoutScannedByInput
+}
+
+export type UserUncheckedCreateWithoutNotificationsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  role?: string
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  phone?: string | null
+  gender?: string | null
+  continent?: string | null
+  country?: string | null
+  stateProvince?: string | null
+  cityDistrict?: string | null
+  bio?: string | null
+  notifEventInvites?: boolean
+  notifNewsletter?: boolean
+  notifDonationReceipts?: boolean
+  notifMemberUpdates?: boolean
+  notifScholarshipNews?: boolean
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  member?: Prisma.MemberUncheckedCreateNestedOneWithoutUserInput
+  tickets?: Prisma.TicketUncheckedCreateNestedManyWithoutUserInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutUserInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedCreateNestedManyWithoutUserInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerUncheckedCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInUncheckedCreateNestedManyWithoutScannedByInput
+}
+
+export type UserCreateOrConnectWithoutNotificationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+}
+
+export type UserUpsertWithoutNotificationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNotificationsInput, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNotificationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNotificationsInput, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
+}
+
+export type UserUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  continent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cityDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifEventInvites?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifNewsletter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifDonationReceipts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMemberUpdates?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifScholarshipNews?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  member?: Prisma.MemberUpdateOneWithoutUserNestedInput
+  tickets?: Prisma.TicketUpdateManyWithoutUserNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutUserNestedInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationUpdateManyWithoutUserNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUpdateManyWithoutScannedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  continent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cityDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifEventInvites?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifNewsletter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifDonationReceipts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMemberUpdates?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifScholarshipNews?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  member?: Prisma.MemberUncheckedUpdateOneWithoutUserNestedInput
+  tickets?: Prisma.TicketUncheckedUpdateManyWithoutUserNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutUserNestedInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedUpdateManyWithoutUserNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUncheckedUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUncheckedUpdateManyWithoutScannedByNestedInput
+}
+
+export type UserCreateWithoutOrganizerOfInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  role?: string
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  phone?: string | null
+  gender?: string | null
+  continent?: string | null
+  country?: string | null
+  stateProvince?: string | null
+  cityDistrict?: string | null
+  bio?: string | null
+  notifEventInvites?: boolean
+  notifNewsletter?: boolean
+  notifDonationReceipts?: boolean
+  notifMemberUpdates?: boolean
+  notifScholarshipNews?: boolean
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  member?: Prisma.MemberCreateNestedOneWithoutUserInput
+  tickets?: Prisma.TicketCreateNestedManyWithoutUserInput
+  donations?: Prisma.DonationCreateNestedManyWithoutUserInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationCreateNestedManyWithoutUserInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInCreateNestedManyWithoutScannedByInput
+}
+
+export type UserUncheckedCreateWithoutOrganizerOfInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  role?: string
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  phone?: string | null
+  gender?: string | null
+  continent?: string | null
+  country?: string | null
+  stateProvince?: string | null
+  cityDistrict?: string | null
+  bio?: string | null
+  notifEventInvites?: boolean
+  notifNewsletter?: boolean
+  notifDonationReceipts?: boolean
+  notifMemberUpdates?: boolean
+  notifScholarshipNews?: boolean
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  member?: Prisma.MemberUncheckedCreateNestedOneWithoutUserInput
+  tickets?: Prisma.TicketUncheckedCreateNestedManyWithoutUserInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutUserInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedCreateNestedManyWithoutUserInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInUncheckedCreateNestedManyWithoutScannedByInput
+}
+
+export type UserCreateOrConnectWithoutOrganizerOfInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutOrganizerOfInput, Prisma.UserUncheckedCreateWithoutOrganizerOfInput>
+}
+
+export type UserUpsertWithoutOrganizerOfInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutOrganizerOfInput, Prisma.UserUncheckedUpdateWithoutOrganizerOfInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutOrganizerOfInput, Prisma.UserUncheckedCreateWithoutOrganizerOfInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutOrganizerOfInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutOrganizerOfInput, Prisma.UserUncheckedUpdateWithoutOrganizerOfInput>
+}
+
+export type UserUpdateWithoutOrganizerOfInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  continent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cityDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifEventInvites?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifNewsletter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifDonationReceipts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMemberUpdates?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifScholarshipNews?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  member?: Prisma.MemberUpdateOneWithoutUserNestedInput
+  tickets?: Prisma.TicketUpdateManyWithoutUserNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutUserNestedInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationUpdateManyWithoutUserNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUpdateManyWithoutScannedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutOrganizerOfInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  continent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cityDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifEventInvites?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifNewsletter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifDonationReceipts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMemberUpdates?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifScholarshipNews?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  member?: Prisma.MemberUncheckedUpdateOneWithoutUserNestedInput
+  tickets?: Prisma.TicketUncheckedUpdateManyWithoutUserNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutUserNestedInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedUpdateManyWithoutUserNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUncheckedUpdateManyWithoutScannedByNestedInput
+}
+
+export type UserCreateWithoutCheckInsScannedInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  role?: string
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  phone?: string | null
+  gender?: string | null
+  continent?: string | null
+  country?: string | null
+  stateProvince?: string | null
+  cityDistrict?: string | null
+  bio?: string | null
+  notifEventInvites?: boolean
+  notifNewsletter?: boolean
+  notifDonationReceipts?: boolean
+  notifMemberUpdates?: boolean
+  notifScholarshipNews?: boolean
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  member?: Prisma.MemberCreateNestedOneWithoutUserInput
+  tickets?: Prisma.TicketCreateNestedManyWithoutUserInput
+  donations?: Prisma.DonationCreateNestedManyWithoutUserInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationCreateNestedManyWithoutUserInput
+  transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCheckInsScannedInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  role?: string
+  banned?: boolean | null
+  banReason?: string | null
+  banExpires?: Date | string | null
+  phone?: string | null
+  gender?: string | null
+  continent?: string | null
+  country?: string | null
+  stateProvince?: string | null
+  cityDistrict?: string | null
+  bio?: string | null
+  notifEventInvites?: boolean
+  notifNewsletter?: boolean
+  notifDonationReceipts?: boolean
+  notifMemberUpdates?: boolean
+  notifScholarshipNews?: boolean
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  member?: Prisma.MemberUncheckedCreateNestedOneWithoutUserInput
+  tickets?: Prisma.TicketUncheckedCreateNestedManyWithoutUserInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutUserInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedCreateNestedManyWithoutUserInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCheckInsScannedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCheckInsScannedInput, Prisma.UserUncheckedCreateWithoutCheckInsScannedInput>
+}
+
+export type UserUpsertWithoutCheckInsScannedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCheckInsScannedInput, Prisma.UserUncheckedUpdateWithoutCheckInsScannedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCheckInsScannedInput, Prisma.UserUncheckedCreateWithoutCheckInsScannedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCheckInsScannedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCheckInsScannedInput, Prisma.UserUncheckedUpdateWithoutCheckInsScannedInput>
+}
+
+export type UserUpdateWithoutCheckInsScannedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  continent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cityDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifEventInvites?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifNewsletter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifDonationReceipts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMemberUpdates?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifScholarshipNews?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  member?: Prisma.MemberUpdateOneWithoutUserNestedInput
+  tickets?: Prisma.TicketUpdateManyWithoutUserNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutUserNestedInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationUpdateManyWithoutUserNestedInput
+  transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCheckInsScannedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  banned?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  continent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cityDistrict?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifEventInvites?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifNewsletter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifDonationReceipts?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifMemberUpdates?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notifScholarshipNews?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  member?: Prisma.MemberUncheckedUpdateOneWithoutUserNestedInput
+  tickets?: Prisma.TicketUncheckedUpdateManyWithoutUserNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutUserNestedInput
+  scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedUpdateManyWithoutUserNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDonationsInput = {
@@ -1678,6 +2502,10 @@ export type UserCreateWithoutDonationsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInCreateNestedManyWithoutScannedByInput
 }
 
 export type UserUncheckedCreateWithoutDonationsInput = {
@@ -1711,6 +2539,10 @@ export type UserUncheckedCreateWithoutDonationsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerUncheckedCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInUncheckedCreateNestedManyWithoutScannedByInput
 }
 
 export type UserCreateOrConnectWithoutDonationsInput = {
@@ -1760,6 +2592,10 @@ export type UserUpdateWithoutDonationsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDonationsInput = {
@@ -1793,6 +2629,10 @@ export type UserUncheckedUpdateWithoutDonationsInput = {
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUncheckedUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUncheckedUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserCreateWithoutScholarshipApplicationsInput = {
@@ -1826,6 +2666,10 @@ export type UserCreateWithoutScholarshipApplicationsInput = {
   donations?: Prisma.DonationCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInCreateNestedManyWithoutScannedByInput
 }
 
 export type UserUncheckedCreateWithoutScholarshipApplicationsInput = {
@@ -1859,6 +2703,10 @@ export type UserUncheckedCreateWithoutScholarshipApplicationsInput = {
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutUserInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerUncheckedCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInUncheckedCreateNestedManyWithoutScannedByInput
 }
 
 export type UserCreateOrConnectWithoutScholarshipApplicationsInput = {
@@ -1908,6 +2756,10 @@ export type UserUpdateWithoutScholarshipApplicationsInput = {
   donations?: Prisma.DonationUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutScholarshipApplicationsInput = {
@@ -1941,6 +2793,10 @@ export type UserUncheckedUpdateWithoutScholarshipApplicationsInput = {
   donations?: Prisma.DonationUncheckedUpdateManyWithoutUserNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUncheckedUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUncheckedUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserCreateWithoutTransactionsInput = {
@@ -1974,6 +2830,10 @@ export type UserCreateWithoutTransactionsInput = {
   donations?: Prisma.DonationCreateNestedManyWithoutUserInput
   scholarshipApplications?: Prisma.ScholarshipApplicationCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInCreateNestedManyWithoutScannedByInput
 }
 
 export type UserUncheckedCreateWithoutTransactionsInput = {
@@ -2007,6 +2867,10 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutUserInput
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedCreateNestedManyWithoutUserInput
   invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  organizerOf?: Prisma.EventOrganizerUncheckedCreateNestedManyWithoutUserInput
+  checkInsScanned?: Prisma.CheckInUncheckedCreateNestedManyWithoutScannedByInput
 }
 
 export type UserCreateOrConnectWithoutTransactionsInput = {
@@ -2056,6 +2920,10 @@ export type UserUpdateWithoutTransactionsInput = {
   donations?: Prisma.DonationUpdateManyWithoutUserNestedInput
   scholarshipApplications?: Prisma.ScholarshipApplicationUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUpdateManyWithoutScannedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTransactionsInput = {
@@ -2089,6 +2957,10 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   donations?: Prisma.DonationUncheckedUpdateManyWithoutUserNestedInput
   scholarshipApplications?: Prisma.ScholarshipApplicationUncheckedUpdateManyWithoutUserNestedInput
   invitations?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  deviceTokens?: Prisma.DeviceTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  organizerOf?: Prisma.EventOrganizerUncheckedUpdateManyWithoutUserNestedInput
+  checkInsScanned?: Prisma.CheckInUncheckedUpdateManyWithoutScannedByNestedInput
 }
 
 
@@ -2104,6 +2976,10 @@ export type UserCountOutputType = {
   scholarshipApplications: number
   transactions: number
   invitations: number
+  deviceTokens: number
+  notifications: number
+  organizerOf: number
+  checkInsScanned: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2114,6 +2990,10 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   scholarshipApplications?: boolean | UserCountOutputTypeCountScholarshipApplicationsArgs
   transactions?: boolean | UserCountOutputTypeCountTransactionsArgs
   invitations?: boolean | UserCountOutputTypeCountInvitationsArgs
+  deviceTokens?: boolean | UserCountOutputTypeCountDeviceTokensArgs
+  notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
+  organizerOf?: boolean | UserCountOutputTypeCountOrganizerOfArgs
+  checkInsScanned?: boolean | UserCountOutputTypeCountCheckInsScannedArgs
 }
 
 /**
@@ -2175,6 +3055,34 @@ export type UserCountOutputTypeCountInvitationsArgs<ExtArgs extends runtime.Type
   where?: Prisma.InvitationWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountDeviceTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DeviceTokenWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountOrganizerOfArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EventOrganizerWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCheckInsScannedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CheckInWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2208,6 +3116,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   scholarshipApplications?: boolean | Prisma.User$scholarshipApplicationsArgs<ExtArgs>
   transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
   invitations?: boolean | Prisma.User$invitationsArgs<ExtArgs>
+  deviceTokens?: boolean | Prisma.User$deviceTokensArgs<ExtArgs>
+  notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
+  organizerOf?: boolean | Prisma.User$organizerOfArgs<ExtArgs>
+  checkInsScanned?: boolean | Prisma.User$checkInsScannedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -2299,6 +3211,10 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   scholarshipApplications?: boolean | Prisma.User$scholarshipApplicationsArgs<ExtArgs>
   transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>
   invitations?: boolean | Prisma.User$invitationsArgs<ExtArgs>
+  deviceTokens?: boolean | Prisma.User$deviceTokensArgs<ExtArgs>
+  notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
+  organizerOf?: boolean | Prisma.User$organizerOfArgs<ExtArgs>
+  checkInsScanned?: boolean | Prisma.User$checkInsScannedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2315,6 +3231,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     scholarshipApplications: Prisma.$ScholarshipApplicationPayload<ExtArgs>[]
     transactions: Prisma.$TransactionPayload<ExtArgs>[]
     invitations: Prisma.$InvitationPayload<ExtArgs>[]
+    deviceTokens: Prisma.$DeviceTokenPayload<ExtArgs>[]
+    notifications: Prisma.$NotificationPayload<ExtArgs>[]
+    organizerOf: Prisma.$EventOrganizerPayload<ExtArgs>[]
+    checkInsScanned: Prisma.$CheckInPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2742,6 +3662,10 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   scholarshipApplications<T extends Prisma.User$scholarshipApplicationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$scholarshipApplicationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScholarshipApplicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transactions<T extends Prisma.User$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invitations<T extends Prisma.User$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  deviceTokens<T extends Prisma.User$deviceTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$deviceTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeviceTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  organizerOf<T extends Prisma.User$organizerOfArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$organizerOfArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventOrganizerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  checkInsScanned<T extends Prisma.User$checkInsScannedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$checkInsScannedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3371,6 +4295,102 @@ export type User$invitationsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[]
+}
+
+/**
+ * User.deviceTokens
+ */
+export type User$deviceTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DeviceToken
+   */
+  select?: Prisma.DeviceTokenSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DeviceToken
+   */
+  omit?: Prisma.DeviceTokenOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DeviceTokenInclude<ExtArgs> | null
+  where?: Prisma.DeviceTokenWhereInput
+  orderBy?: Prisma.DeviceTokenOrderByWithRelationInput | Prisma.DeviceTokenOrderByWithRelationInput[]
+  cursor?: Prisma.DeviceTokenWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DeviceTokenScalarFieldEnum | Prisma.DeviceTokenScalarFieldEnum[]
+}
+
+/**
+ * User.notifications
+ */
+export type User$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Notification
+   */
+  select?: Prisma.NotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Notification
+   */
+  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationInclude<ExtArgs> | null
+  where?: Prisma.NotificationWhereInput
+  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
+}
+
+/**
+ * User.organizerOf
+ */
+export type User$organizerOfArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EventOrganizer
+   */
+  select?: Prisma.EventOrganizerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EventOrganizer
+   */
+  omit?: Prisma.EventOrganizerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EventOrganizerInclude<ExtArgs> | null
+  where?: Prisma.EventOrganizerWhereInput
+  orderBy?: Prisma.EventOrganizerOrderByWithRelationInput | Prisma.EventOrganizerOrderByWithRelationInput[]
+  cursor?: Prisma.EventOrganizerWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EventOrganizerScalarFieldEnum | Prisma.EventOrganizerScalarFieldEnum[]
+}
+
+/**
+ * User.checkInsScanned
+ */
+export type User$checkInsScannedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CheckIn
+   */
+  select?: Prisma.CheckInSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CheckIn
+   */
+  omit?: Prisma.CheckInOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CheckInInclude<ExtArgs> | null
+  where?: Prisma.CheckInWhereInput
+  orderBy?: Prisma.CheckInOrderByWithRelationInput | Prisma.CheckInOrderByWithRelationInput[]
+  cursor?: Prisma.CheckInWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CheckInScalarFieldEnum | Prisma.CheckInScalarFieldEnum[]
 }
 
 /**

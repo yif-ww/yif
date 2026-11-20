@@ -39,7 +39,15 @@ const TRUST_ITEMS = [
   "Over 10,000 beneficiaries served",
 ];
 
-export default async function DonatePage() {
+export default async function DonatePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ cause?: string | string[] }>;
+}) {
+  // The member app links here with ?cause= so the chosen cause is preselected.
+  const { cause } = await searchParams;
+  const initialCause = typeof cause === "string" ? cause : undefined;
+
   const session = await auth.api
     .getSession({ headers: await headers() })
     .catch(() => null);
@@ -126,7 +134,7 @@ export default async function DonatePage() {
                 <h2 className="mb-6 font-display text-2xl font-semibold text-[var(--yif-navy)]">
                   Make Your Gift
                 </h2>
-                <DonateForm user={user} />
+                <DonateForm user={user} initialCause={initialCause} />
               </div>
             </div>
 
