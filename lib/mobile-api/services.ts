@@ -421,7 +421,7 @@ async function heldSeatsByTier(tierIds: string[], now: Date): Promise<Map<string
   return new Map(groups.map((g) => [g.tierId ?? "", g._sum.quantity ?? 0]));
 }
 
-function eventIsOver(event: { date: Date; endDate: Date | null }, now: Date): boolean {
+export function eventIsOver(event: { date: Date; endDate: Date | null }, now: Date): boolean {
   return (event.endDate ?? event.date).getTime() + DAY_MS <= now.getTime();
 }
 

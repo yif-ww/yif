@@ -269,6 +269,7 @@ Checked on 18 November 2026:
 | 19 Nov 2026 | M1 | All 15 screens built on sample data, with loading, empty and error states, all text in one localization file, and unit, screen and screenshot tests |
 | 20 Nov 2026 | M2 | Payment fixes G1 to G5, mobile sign-in, rate limiting, QR signing and the read-only mobile API, on branch `feat/mobile-api`. 23 fast tests and 45 database tests pass, and the project type-checks. **Not yet deployed or committed.** See `docs/M2 Release Checklist.md` |
 | 20 Nov 2026 | M3 | The app signs in with the website account, keeps the token in secure storage, offers fingerprint unlock, and reads Home, Card, Profile, News, Events, Tickets and Payments from the real API, with the card, tickets and payments saved for offline use. Checked against a real local server and database. **Not yet tried on a phone against a deployed server** (M2 must be deployed first) |
+| 21 Nov 2026 | M4 to M7 | In-app renewal and ticket purchase through the same Paystack and Stripe payments as the website, with a confirmation screen that waits for the server. Door check-in: guest list saved on the phone, camera scanning, ticket signatures checked offline, and an upload queue that cannot double-admit. In-app inbox and phone registration for push. Account deletion. App icon, splash screen and signing set up. Checked against a real local server and database. **Not built:** sponsor placements (M8) and sending push messages (needs a Firebase project). **Not yet deployed or tested on a deployed server** |
 
 **Decisions made during M0 and M1**
 
@@ -321,3 +322,18 @@ Checked on 18 November 2026:
 - **Payments marked abandoned or reversed** show as "Failed" in the app. The member did not end up paying, or got the money back.
 - **Pictures are not saved offline.** Event and article pictures load from the web each time. Offline picture saving is M9 polish.
 - **Local demo server.** `scripts/demo-mobile-api.mts` in the website repo serves the real route handlers over a throwaway database with a demo member, so the app and its live tests can run with no deployed server. Demo sign-in: `member@example.com` / `demo-password-123`.
+
+**Decisions made during M4 to M7**
+
+- **No return link.** After paying, the app opens the provider's hosted page in an in-app browser, then asks the server about the payment every 2 seconds for up to 2 minutes. The server applies the payment from the provider's webhook, so this works even if the member closes the browser. That removed the need for deep links, `assetlinks.json` and `apple-app-site-association`.
+- **The server sets every price.** The app sends a tier and a currency (or a tier and a quantity). A changed app cannot pay a different amount.
+- **Free tickets and lower tiers stay on the website.** Free tickets have no payment to confirm, and moving down is a scheduled change, not a payment.
+- **Lapsed members can renew in the app.** Active and expired members may start a renewal. Pending and suspended ones are sent to the website or to YIF.
+- **Ticket buying is naira only** in the app, matching the mobile API. Dollar tickets stay on the website.
+- **A phone only trusts the keys it downloaded with the guest list.** With no list saved, no ticket is trusted, so a forged code is never admitted.
+- **Rejected check-ins leave the queue.** A check-in the server rejects (unknown or unpaid ticket, wrong event) would never be accepted, so keeping it would block everything behind it.
+- **Part-used tickets.** A party of four can arrive in two groups. The ticket stays valid until the last guest is in.
+- **Account deletion anonymises.** Described in the release checklist. It asks for the password, and refuses while paid tickets for upcoming events exist.
+- **Push messages are not sent yet.** Phones can register a token and the server stores it, but sending needs a Firebase project (a decision and an account only the Foundation can provide). The inbox works without it, and the app needs no change once sending is added on the server.
+- **Sponsor placements (M8) are not built.** They need an admin screen to book and approve placements, which is a separate piece of website work. The app shows no sponsor card until then.
+- **Crash reporting is not added.** It needs a Sentry project address (DSN). Nothing in the app depends on it.

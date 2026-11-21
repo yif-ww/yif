@@ -11,6 +11,7 @@
 // Then point the app (or `yif-mobile`'s live test) at http://localhost:3100.
 // Demo sign-ins:  member@example.com / demo-password-123  (active Gold member)
 //                 expired@example.com / demo-password-123 (lapsed membership)
+//                 door@example.com / demo-password-123    (runs the door at the Annual Awards)
 //
 // Like the integration tests, it refuses to touch anything but a local database.
 
@@ -57,6 +58,7 @@ async function seed() {
   }
   const member = await makeUser("member@example.com", "Adebola Balogun");
   const lapsed = await makeUser("expired@example.com", "Folake Adeyemi");
+  const door = await makeUser("door@example.com", "Door Volunteer");
 
   const silver = await prisma.membershipTier.create({ data: { slug: "silver", name: "Silver", sortOrder: 0 } });
   const gold = await prisma.membershipTier.create({ data: { slug: "gold", name: "Gold", sortOrder: 1 } });
@@ -99,6 +101,16 @@ async function seed() {
       reference: "YIF-TK-8F3K2P", userId: member.id, holderName: "Adebola Balogun",
     },
   });
+
+  await prisma.eventOrganizer.create({ data: { eventId: awards.id, userId: door.id } });
+  for (const [kind, title, body, link, ago] of [
+    ["ticket", "Your ticket is ready", "Annual Awards: 2 tickets, saved on your phone.", "/events?tab=tickets", 6],
+    ["renewal", "Membership renewed", "Thank you. Your Gold membership now runs to June 2027.", "/card", 165],
+  ] as const) {
+    await prisma.notification.create({
+      data: { userId: member.id, kind, title, body, link, createdAt: days(-ago) },
+    });
+  }
 
   await prisma.transaction.create({
     data: {
@@ -147,6 +159,14 @@ type RouteModule = Record<string, Handler | undefined>;
 const base = "../app/api/mobile/v1";
 const table: Array<[RegExp, string[], () => Promise<RouteModule>]> = [
   [/^\/me$/, [], () => import(`${base}/me/route`)],
+  [/^\/membership\/checkout$/, [], () => import(`${base}/membership/checkout/route`)],
+  [/^\/events\/([^/]+)\/checkout$/, ["slug"], () => import(`${base}/events/[slug]/checkout/route`)],
+  [/^\/notifications$/, [], () => import(`${base}/notifications/route`)],
+  [/^\/notifications\/read$/, [], () => import(`${base}/notifications/read/route`)],
+  [/^\/devices$/, [], () => import(`${base}/devices/route`)],
+  [/^\/organizer\/events$/, [], () => import(`${base}/organizer/events/route`)],
+  [/^\/organizer\/events\/([^/]+)\/manifest$/, ["id"], () => import(`${base}/organizer/events/[id]/manifest/route`)],
+  [/^\/organizer\/check-ins$/, [], () => import(`${base}/organizer/check-ins/route`)],
   [/^\/membership$/, [], () => import(`${base}/membership/route`)],
   [/^\/membership\/card$/, [], () => import(`${base}/membership/card/route`)],
   [/^\/membership\/tiers$/, [], () => import(`${base}/membership/tiers/route`)],

@@ -1,6 +1,6 @@
-# M2 Release Checklist: Backend Foundations
+# Release Checklist: Mobile Backend (M2 to M7)
 
-**Branch:** `feat/mobile-api` · **Covers:** payment fixes G1 to G5, mobile sign-in, the read-only mobile API, QR signing
+**Branch:** `feat/mobile-api` · **Covers:** payment fixes G1 to G5, mobile sign-in, the mobile API (read routes, renewal and ticket checkout, door check-in, inbox, account deletion), QR signing
 
 This work changes live payment code and the live database. Nothing here has been run against production. Follow the steps in order, and do the dry run first.
 
@@ -17,12 +17,17 @@ This work changes live payment code and the live database. Nothing here has been
 | Ticket records | Never created. The dashboard read payments | A ticket is created for each purchase, with a short reference such as `YIF-TK-8F3K2P` (G4) |
 | Event capacity | Not enforced. Events could oversell | Seats are held for 15 minutes during checkout and counted when paid (G5) |
 | Renewal confirmation email | None | A receipt email is sent |
-| Mobile app | No way to sign in | Bearer sign-in, rate-limited password attempts, and read-only mobile API |
+| Mobile app | No way to sign in | Bearer sign-in, rate-limited password attempts, and the mobile API under `/api/mobile/v1` (see `mobile-api-contract.md`) |
+| Paying from the app | Not possible | `POST /membership/checkout` and `POST /events/{slug}/checkout` start the same Paystack and Stripe payments as the website, priced on the server |
+| Door check-in | Not possible | Organizers download a guest list and upload check-ins from the app. Who may run which door comes from `EventOrganizer` rows, and administrators may run any |
+| Deleting an account | Not possible | `DELETE /me` anonymises the account (see below) |
 
 **Behaviour to know about**
 
 - **Late payments are honoured.** If a buyer pays after their 15-minute hold ended and the seats are gone, the ticket is still confirmed and the payment is marked `OVERSOLD` in the notes on that transaction's page in admin. This should be rare (it needs a buyer to take more than 15 minutes at checkout while the event sells out). A future admin view will list these. For now, search the notes when an event is close to selling out, then contact or refund the buyer.
 - **Upgrades are unchanged.** A first activation or an upgrade is still one year from the payment date. Only same-tier renewals now add to the current expiry.
+- **Account deletion anonymises, it does not erase rows.** Name, email, phone, address, bio and photo are wiped, sign-ins end, scholarship applications are deleted, and the account is locked for good. Payment records stay with their amounts and references but no name or email, because the law requires keeping them. A member with paid tickets for upcoming events is asked to contact YIF first. Administrators cannot delete themselves this way.
+- **Door check-in access.** To let someone run an event's door, add a row in `event_organizer` (event ID and user ID). There is no admin screen for this yet.
 - **Sold-out events now say so.** The website's ticket forms show "only N tickets left" or "sold out" instead of taking payment.
 
 ---
@@ -34,6 +39,8 @@ This work changes live payment code and the live database. Nothing here has been
 3. **Approve the package builds on this machine.** From the website folder run `pnpm approve-builds` and allow the listed packages, so Prisma's commands keep working.
 
 ## 3. Deploy
+
+No new migrations were needed after the first two: the door check-in, inbox and checkout work all use tables from `20261120090000_mobile_api_foundations`.
 
 1. **Run the migrations on the production database.** From the website folder, with `DATABASE_URL` pointing at production:
    ```bash
@@ -66,6 +73,10 @@ Use test mode first, with test keys.
 - [ ] **Donate link:** open `https://www.yifww.org/donate?cause=Scholarship%20Fund`. The Scholarship Fund is preselected.
 - [ ] **Mobile API:** sign in with `POST /api/auth/sign-in/email` and read `set-auth-token` from the response headers. Then call `GET /api/mobile/v1/me` with `Authorization: Bearer <token>`.
 - [ ] **Signing key:** `GET /api/mobile/v1/keys` returns one key, and `GET /api/mobile/v1/membership/card` for an active member returns a token.
+- [ ] **Renewal from the app:** with a test member on the app, tap Renew, pay with a Paystack test card, and watch the confirmation screen turn to "renewed" by itself. Repeat with a dollar price (Stripe).
+- [ ] **Tickets from the app:** buy a ticket with a Paystack test card. The ticket opens from My tickets, and with the phone in airplane mode.
+- [ ] **Door check-in:** add yourself as an organizer (`event_organizer` row) for a test event, scan a test member's ticket in airplane mode, reconnect, and check the ticket's `checkedInCount` on the server.
+- [ ] **Account deletion:** delete a throwaway test account from Profile. It can no longer sign in, and its payment rows no longer show its name.
 
 ## 5. If something goes wrong
 
@@ -87,7 +98,7 @@ Use test mode first, with test keys.
 
 ```bash
 pnpm test                 # fast rules and QR token tests, no database
-pnpm test:integration     # payments, sign-in and the mobile API, against a throwaway database
+pnpm test:integration     # payments, sign-in, the mobile API, checkout, door check-in and the inbox, against a throwaway database
 ```
 
 The integration tests insert and change rows, so they need `TEST_DATABASE_URL` pointing at a **local throwaway database** with the migrations applied. They refuse to run against any other host. They never touch production.

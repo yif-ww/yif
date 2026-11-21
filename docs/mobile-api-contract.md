@@ -1,7 +1,7 @@
 # YIF Mobile API Contract
 
-**Version:** 1.1 · **Base path:** `/api/mobile/v1` · **Consumer:** the `yif-mobile` Flutter app
-**Scope:** [Member App PRD](YIF%20Member%20App%20PRD.md) Section 8.2 · **Built so far:** milestone M2 (read-only routes)
+**Version:** 1.2 · **Base path:** `/api/mobile/v1` · **Consumer:** the `yif-mobile` Flutter app
+**Scope:** [Member App PRD](YIF%20Member%20App%20PRD.md) Section 8.2 · **Built so far:** milestones M2 to M7 on the server, except sponsor placements (M8) and sending push messages (see section 3)
 
 Each route below is marked **Built** (works today, tested) or **Planned** (a later milestone).
 
@@ -49,15 +49,18 @@ Every error uses one shape. `message` is safe to show to members. `fields` appea
 | 403 | `FORBIDDEN` | The account is suspended, or the member lacks the needed assignment |
 | 403 | `CARD_INACTIVE` | The membership is expired, pending or suspended, so no card is issued |
 | 404 | `NOT_FOUND` | Missing, unpublished, or belonging to another member (the two are not distinguished) |
-| 409 | `SOLD_OUT` | **Planned (M5).** Not enough seats remain |
-| 422 | `TIER_NOT_AVAILABLE` | **Planned (M4).** The tier is unknown, inactive or a downgrade |
+| 409 | `SOLD_OUT` | Not enough seats remain. The message says how many are left |
+| 409 | `SALES_CLOSED` | The event is over, so tickets can no longer be bought |
+| 409 | `UPCOMING_TICKETS` | Account deletion refused: the member holds paid tickets for upcoming events and should contact YIF first |
+| 422 | `TIER_NOT_AVAILABLE` | The tier or ticket option is unknown, retired, a downgrade, free (claimed on the website), or has no price in that currency |
+| 403 | `INVALID_PASSWORD` | Account deletion refused: the password is wrong |
 | 429 | `RATE_LIMITED` | Too many requests. See `Retry-After` |
 | 500 | `INTERNAL` | Unexpected error. Details are logged on the server only |
 | 503 | `QR_SIGNING_UNAVAILABLE` | The server has no QR signing key configured |
 
 ### Idempotency
 
-**Planned (M4, M5, M6).** `POST` routes that start a payment or upload check-ins will accept an `Idempotency-Key` header (a UUID). Repeating a key within 24 hours returns the original result.
+No `Idempotency-Key` header is needed. A repeated checkout call makes a new payment reference, and an unused one simply expires (a ticket hold lasts 15 minutes). Uploading check-ins is idempotent by design: each check-in carries its own ID made on the phone.
 
 ---
 
@@ -106,7 +109,7 @@ Every error uses one shape. `message` is safe to show to members. `fields` appea
   "capacity": 300,
   "tiers": [{ "id": "cuid", "name": "General Admission", "description": "Ceremony and reception",
               "price": { "amount": 25000, "currency": "NGN" }, "remaining": 154 }],
-  "sponsor": null                            // Planned (M8): a Placement
+  "sponsor": null                            // Always null until sponsor placements (M8) are built
 }
 ```
 
@@ -150,7 +153,7 @@ Every error uses one shape. `message` is safe to show to members. `fields` appea
 | :---: | :--- | :--- | :--- | :---: |
 | GET | `/me` | None | `{ "member": Member, "preferences": Preferences }` | Built |
 | PATCH | `/me` | Any of `firstName`, `lastName`, `city`, `country`, `preferences` | Same as `GET /me` | Built |
-| DELETE | `/me` | `{ "password" }` | `204`. Ends all sessions, removes personal data, keeps payment records in anonymized form | Planned (M9) |
+| DELETE | `/me` | `{ "password" }` | `204`. Ends all sessions and wipes name, email, phone, address, bio and photo. Payment records stay, with their amounts and references but no name or email. Scholarship applications are deleted. The account is locked for good. Refused with `409 UPCOMING_TICKETS` while the member holds paid tickets for upcoming events, and for administrators | Built |
 
 `Preferences` is `{ "eventInvites", "newsletter", "donationReceipts", "memberUpdates", "scholarshipNews" }`, all booleans. Payment confirmations are always sent and are not a setting.
 
@@ -161,7 +164,7 @@ Every error uses one shape. `message` is safe to show to members. `fields` appea
 | GET | `/membership` | None | The `membership` object, or `404` if the account has none | Built |
 | GET | `/membership/card` | None | `{ "qrToken": "YIF1.C…", "expiresAt", "membershipNumber" }`, or `403 CARD_INACTIVE` | Built |
 | GET | `/membership/tiers` | `?currency=NGN` | `{ "currency", "currencies": ["GBP","NGN","USD"], "tiers": [{ "id", "name", "rank", "isCurrent", "price": Money }] }` | Built |
-| POST | `/membership/checkout` | `{ "tierId", "currency" }` | `{ "reference", "provider", "checkoutUrl" }` | Planned (M4) |
+| POST | `/membership/checkout` | `{ "tierId", "currency" }` | `{ "reference", "provider", "checkoutUrl" }` | Built |
 
 - The card token lasts at most 30 days and never outlives the membership. The app refreshes it whenever it has a connection.
 - Tiers lists the member's own tier and higher ones that have a price in the chosen currency. Lower tiers stay on the website.
@@ -182,7 +185,7 @@ Every error uses one shape. `message` is safe to show to members. `fields` appea
 | :---: | :--- | :--- | :--- | :---: |
 | GET | `/events` | `?when=upcoming\|past`, cursor | List of `Event`. Upcoming is soonest first, past is latest first. An event counts as upcoming until the end of its last day | Built |
 | GET | `/events/{slug}` | None | `Event`, or `404` for unknown and unpublished events | Built |
-| POST | `/events/{slug}/checkout` | `{ "tierId", "quantity", "currency" }` | `{ "reference", "provider", "checkoutUrl", "holdExpiresAt" }` | Planned (M5) |
+| POST | `/events/{slug}/checkout` | `{ "tierId", "quantity", "currency"? }` | `{ "reference", "provider", "checkoutUrl", "holdExpiresAt" }` | Built |
 | GET | `/tickets` | Cursor | List of `Ticket`, newest purchase first | Built |
 | GET | `/tickets/{id}` | None | `Ticket`, or `404` if it belongs to someone else | Built |
 
@@ -202,10 +205,10 @@ Every error uses one shape. `message` is safe to show to members. `fields` appea
 
 | Method | Route | Request | Response | Status |
 | :---: | :--- | :--- | :--- | :---: |
-| GET | `/notifications` | Cursor | `{ "items": [{ "id", "kind", "title", "body", "link", "read", "createdAt" }], "unreadCount" }` | Planned (M7) |
-| POST | `/notifications/read` | `{ "ids": [...] }` or `{ "all": true }` | `204` | Planned (M7) |
-| POST | `/devices` | `{ "token", "platform": "ios\|android", "appVersion" }` | `204` | Planned (M7) |
-| DELETE | `/devices` | `{ "token" }` | `204` | Planned (M7) |
+| GET | `/notifications` | Cursor | `{ "items": [{ "id", "kind", "title", "body", "link", "read", "createdAt" }], "nextCursor", "unreadCount" }` | Built |
+| POST | `/notifications/read` | `{ "ids": [...] }` or `{ "all": true }` | `204`. IDs that are not the member's are ignored | Built |
+| POST | `/devices` | `{ "token", "platform": "ios\|android", "appVersion" }` | `204`. A token belongs to one member at a time | Built |
+| DELETE | `/devices` | `{ "token" }` | `204` | Built |
 
 The server already writes inbox rows (`Notification`) when a payment is confirmed. `kind` is `renewal`, `ticket`, `event`, `news` or `announcement`, and `link` is an in-app path such as `/tickets/abc`.
 
@@ -213,11 +216,20 @@ The server already writes inbox rows (`Notification`) when a payment is confirme
 
 | Method | Route | Request | Response | Status |
 | :---: | :--- | :--- | :--- | :---: |
-| GET | `/organizer/events` | None | List of `{ "id", "title", "shortTitle", "startsAt", "capacity", "admittedCount" }` | Planned (M6) |
-| GET | `/organizer/events/{id}/manifest` | None | `{ "eventId", "generatedAt", "capacity", "keys": [...], "entries": [{ "ticketId", "holderName", "tierName", "quantity", "checkedInCount", "lastCheckInAt", "lastGate" }] }` | Planned (M6) |
-| POST | `/organizer/check-ins` | `{ "checkIns": [{ "id": "uuid", "ticketId", "count", "at", "gate", "deviceId" }] }` (up to 200) | `{ "results": [{ "id", "status": "ACCEPTED\|DUPLICATE\|CONFLICT\|REJECTED" }], "admittedCount" }` | Planned (M6) |
+| GET | `/organizer/events` | None | `{ "items": [{ "id", "title", "shortTitle", "startsAt", "capacity", "admittedCount" }] }`. Events the person is assigned to; administrators see all | Built |
+| GET | `/organizer/events/{id}/manifest` | None | `{ "eventId", "generatedAt", "capacity", "keys": [{ "kid", "publicKey" }], "entries": [{ "ticketId", "holderName", "tierName", "quantity", "checkedInCount", "lastCheckInAt", "lastGate" }] }`. Paid tickets only. An event the person does not run answers `404` | Built |
+| POST | `/organizer/check-ins` | `{ "eventId"?, "checkIns": [{ "id": "uuid", "ticketId", "count", "at", "gate", "deviceId" }] }` (up to 200) | `{ "results": [{ "id", "status": "ACCEPTED\|DUPLICATE\|CONFLICT\|REJECTED" }], "admittedCount" }`, results in the order sent | Built |
 
 Each check-in `id` is generated on the phone, so retries never admit a guest twice. `CONFLICT` means two phones admitted more guests than a ticket allows. The server keeps both records and flags the ticket for the event lead.
+
+**How an upload is judged** (per check-in, oldest scan first). The ticket row is locked while it is judged, so two phones uploading at once get the same answers they would one after the other.
+
+| Status | Meaning |
+| :--- | :--- |
+| `ACCEPTED` | Guests were admitted and counted. A ticket becomes `USED` when everyone is in |
+| `DUPLICATE` | That check-in ID was already received. Nothing changes |
+| `CONFLICT` | Two phones admitted more guests than the ticket allows. Both records are kept and the count stops at the ticket's quantity |
+| `REJECTED` | The ticket is unknown, unpaid, or belongs to an event this person does not run |
 
 ### Sponsors
 
@@ -270,7 +282,7 @@ YIF1.<kind>.<payload>.<signature>
 
 | Item | Value | Status |
 | :--- | :--- | :---: |
-| Checkout return link | `https://www.yifww.org/app/return?reference=<reference>` | Planned (M4) |
-| Android verification | `public/.well-known/assetlinks.json` for `org.yifww.members` | Planned (M4) |
-| iOS verification | `public/.well-known/apple-app-site-association` for `org.yifww.members` | Planned (M4) |
+| Checkout return link | Not used. The app opens the hosted payment page in an in-app browser and then asks `GET /payments/{reference}` every 2 seconds until the server has applied the payment, so no return link is needed | Dropped |
+| Android verification | `public/.well-known/assetlinks.json` for `org.yifww.members` | Not needed yet (no deep links) |
+| iOS verification | `public/.well-known/apple-app-site-association` for `org.yifww.members` | Not needed yet (no deep links) |
 | Donate hand-off | `https://www.yifww.org/donate?cause=<cause>`. The form preselects the cause | Built |
